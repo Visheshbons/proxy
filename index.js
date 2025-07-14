@@ -4,6 +4,7 @@ import express from 'express';
 import chalk from 'chalk';
 
 import { statusCode } from './errors.js'; // Custom error handler
+import { blacklist, whitelist } from './appConfig.js';
 
 const app = express();
 const port = process.env.PORT || 1500;
@@ -14,6 +15,20 @@ const port = process.env.PORT || 1500;
 
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
+
+// Check if IP is allowed
+function checkWhitelistQualification(ip) {
+
+    // Make sure IP is a string
+    const IP = String(ip);
+
+    // Check if IP is in the whitelist
+    for (let i = 0; i < whitelist.length; i++) {
+        if (IP == whitelist[i]) {
+            return true;
+        }
+    }
+}
 
 
 
