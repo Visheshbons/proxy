@@ -2,12 +2,19 @@
 
 import express from 'express';
 import chalk from 'chalk';
+import readline from 'readline';
 
 import { statusCode } from './errors.js'; // Custom error handler
-import { blacklist, whitelist } from './appConfig.js';
+import { blacklist, whitelist, caesarCipher, base64, testEncryption } from './appConfig.js';
 
 const app = express();
 const port = process.env.PORT || 1500;
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    terminal: false
+});
 
 
 
@@ -58,4 +65,12 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
     // Server start log
     console.log(`Server is running on port ${chalk.green(port)}`);
+    console.log("")
+
+    // Test encryption
+    rl.question('Test Encryption? (y/n): ', (confirmation) => {
+        if (confirmation == "y") {
+            testEncryption()
+        }
+    });
 });
