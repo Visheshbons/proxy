@@ -3,6 +3,8 @@
 import express from 'express';
 import chalk from 'chalk';
 
+import { errorCode } from './errors.js'; // Custom error handler
+
 const app = express();
 const port = process.env.PORT || 1500;
 
@@ -23,13 +25,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // ---------- Error Handler ---------- \\
 
-app.use((req, res, next) => {
+app.use((req, res, next) => { 
+    // Runs if a request does not match any of the routes mentioned above
     statusCode(req, res, 404);
     next();
 });
 
 app.use((err, req, res, next) => {
-    statusCode(req, res, err.status || 500);
+    // Runs when an error occurs in any of the above routes
+    statusCode(req, res, err.status /* If it exists */ || 500);
 });
 
 
@@ -37,5 +41,6 @@ app.use((err, req, res, next) => {
 // ---------- Runtime ---------- \\
 
 app.listen(port, () => {
+    // Server start log
     console.log(`Server is running on port ${chalk.green(port)}`);
 });
