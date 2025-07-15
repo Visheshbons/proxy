@@ -1,0 +1,17 @@
+body {
+    background-color: black;
+    color: green;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.confirmation-input {
+    color: greenyellow;
+}
+
+.url-input {
+    color: greenyellow;
+}
+
+.pass {
+    color: greenyellow;
+}
