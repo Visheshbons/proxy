@@ -1,0 +1,444 @@
+[
+  {
+    "name": "Math",
+    "subcourses": [
+      {
+        "id": 1,
+        "name": "Addition, Subtraction, Multiplication, Division",
+        "lessons": [
+          {
+            "name": "What is Math?",
+            "questions": [
+              {
+                "title": "What is Math?",
+                "content": "Math is a way we communicate numbers with each other, and perform operations using it.",
+                "answer": "continue",
+                "difficulty": 0,
+                "classIDs": [1],
+                "type": "multichoice",
+                "options": ["Continue"]
+              },
+              {
+                "title": "How does math help us?",
+                "content": "Math helps us calculate decisions accurately.\r\nFor example, in building a rocket, you want to know how much fuel you need to get to space.",
+                "answer": "continue",
+                "difficulty": 0,
+                "classIDs": [1],
+                "type": "multichoice",
+                "options": ["Continue"]
+              }
+            ]
+          },
+          {
+            "name": "Addition: the Basics",
+            "questions": [
+              {
+                "title": "What is addition?",
+                "content": "Addition is combining two or more numbers to find their total.",
+                "answer": "continue",
+                "difficulty": 0,
+                "classIDs": [1],
+                "type": "multichoice",
+                "options": ["Continue"]
+              },
+              {
+                "title": "What is 3 + 2?",
+                "content": "Choose the correct answer.",
+                "answer": "5",
+                "difficulty": 1,
+                "classIDs": [1],
+                "type": "multichoice",
+                "options": ["4", "5", "6"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "Powers and Roots",
+        "lessons": [
+          {
+            "name": "Multipliation BUT BETTER",
+            "questions": [
+              {
+                "title": "What is exponentiation?",
+                "content": "Exponentiation is repeated multiplication. For example, 2^3 means 2 * 2 * 2.",
+                "answer": "continue",
+                "difficulty": 1,
+                "classIDs": [2],
+                "type": "multichoice",
+                "options": ["Continue"]
+              },
+              {
+                "title": "What is 2^4?",
+                "content": "Pick the correct value.",
+                "answer": "16",
+                "difficulty": 1,
+                "classIDs": [2],
+                "type": "multichoice",
+                "options": ["6", "8", "16", "24"]
+              }
+            ]
+          },
+          {
+            "name": "Sqaring",
+            "questions": [
+              {
+                "title": "What is squaring a number?",
+                "content": "To square a number, multiply it by itself. For example, 5 squared is 5 × 5 = 25.",
+                "answer": "continue",
+                "difficulty": 1,
+                "classIDs": [2],
+                "type": "multichoice",
+                "options": ["Continue"]
+              },
+              {
+                "title": "What is the square of 6?",
+                "content": "Choose the right answer.",
+                "answer": "36",
+                "difficulty": 1,
+                "classIDs": [2],
+                "type": "multichoice",
+                "options": ["30", "36", "42"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name": "Trignometry",
+        "lessons": [
+          {
+            "name": "Triangles",
+            "questions": [
+              {
+                "title": "What is a triangle?",
+                "content": "A triangle is a polygon with 3 sides and 3 angles.",
+                "answer": "continue",
+                "difficulty": 1,
+                "classIDs": [3],
+                "type": "multichoice",
+                "options": ["Continue"]
+              },
+              {
+                "title": "What is the sum of angles in any triangle?",
+                "content": "Choose the correct sum.",
+                "answer": "180",
+                "difficulty": 1,
+                "classIDs": [3],
+                "type": "multichoice",
+                "options": ["90", "180", "360"]
+              }
+            ]
+          },
+          {
+            "name": "SOH, CAH, and TOA",
+            "questions": [
+              {
+                "title": "What does SOH stand for?",
+                "content": "SOH means Sine = Opposite / Hypotenuse.",
+                "answer": "continue",
+                "difficulty": 2,
+                "classIDs": [3],
+                "type": "multichoice",
+                "options": ["Continue"]
+              },
+              {
+                "title": "Which rule would you use for cosine?",
+                "content": "Choose the right trigonometric identity.",
+                "answer": "CAH",
+                "difficulty": 2,
+                "classIDs": [3],
+                "type": "multichoice",
+                "options": ["SOH", "CAH", "TOA"]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Science",
+    "subcourses": [
+      {
+        "id": 4,
+        "name": "Atoms and Elements",
+        "lessons": [
+          {
+            "name": "Atoms",
+            "questions": [
+              {
+                "title": "What is an atom?",
+                "content": "An atom is the smallest unit of matter that retains the properties of an element.",
+                "answer": "continue",
+                "difficulty": 1,
+                "classIDs": [4],
+                "type": "multichoice",
+                "options": ["Continue"]
+              },
+              {
+                "title": "Which parts make up an atom?",
+                "content": "Select the correct parts.",
+                "answer": "Proton, Neutron, Electron",
+                "difficulty": 2,
+                "classIDs": [4],
+                "type": "multichoice",
+                "options": ["Nucleus, Shell", "Proton, Neutron, Electron", "Molecule, Ion"]
+              }
+            ]
+          },
+          {
+            "name": "Periodic Table",
+            "questions": [
+              {
+                "title": "What is the Periodic Table?",
+                "content": "The Periodic Table organizes all known chemical elements.",
+                "answer": "continue",
+                "difficulty": 1,
+                "classIDs": [4],
+                "type": "multichoice",
+                "options": ["Continue"]
+              },
+              {
+                "title": "What does each row of the Periodic Table represent?",
+                "content": "Choose the best explanation.",
+                "answer": "An energy level/shell",
+                "difficulty": 2,
+                "classIDs": [4],
+                "type": "multichoice",
+                "options": ["Electron count", "An energy level/shell", "Atomic radius"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "name": "Acids and Bases",
+        "lessons": [
+          {
+            "name": "What defines an Acid and a Base?",
+            "questions": [
+              {
+                "title": "What is an acid?",
+                "content": "An acid donates hydrogen ions (H+) in a solution.",
+                "answer": "continue",
+                "difficulty": 1,
+                "classIDs": [5],
+                "type": "multichoice",
+                "options": ["Continue"]
+              },
+              {
+                "title": "What is a base?",
+                "content": "A base accepts hydrogen ions (H+) or donates OH- ions.",
+                "answer": "continue",
+                "difficulty": 1,
+                "classIDs": [5],
+                "type": "multichoice",
+                "options": ["Continue"]
+              }
+            ]
+          },
+          {
+            "name": "Chemical Differences",
+            "questions": [
+              {
+                "title": "What happens when an acid reacts with a base?",
+                "content": "They neutralize each other to form water and a salt.",
+                "answer": "Water and salt",
+                "difficulty": 2,
+                "classIDs": [5],
+                "type": "multichoice",
+                "options": ["Explosion", "Water and salt", "Nothing"]
+              },
+              {
+                "title": "What is pH?",
+                "content": "pH measures how acidic or basic a substance is.",
+                "answer": "continue",
+                "difficulty": 1,
+                "classIDs": [5],
+                "type": "multichoice",
+                "options": ["Continue"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "name": "Ionic Chemistry",
+        "lessons": [
+          {
+            "name": "Ions: the Basics",
+            "questions": [
+              {
+                "title": "What is an ion?",
+                "content": "An ion is an atom or molecule with a net electric charge.",
+                "answer": "continue",
+                "difficulty": 1,
+                "classIDs": [6],
+                "type": "multichoice",
+                "options": ["Continue"]
+              },
+              {
+                "title": "What causes a positive or negative ion?",
+                "content": "Losing electrons creates a positive ion; gaining electrons creates a negative ion.",
+                "answer": "continue",
+                "difficulty": 1,
+                "classIDs": [6],
+                "type": "multichoice",
+                "options": ["Continue"]
+              }
+            ]
+          },
+          {
+            "name": "Ionic Table",
+            "questions": [
+              {
+                "title": "How are ionic charges arranged?",
+                "content": "Elements in groups tend to have similar ionic charges.",
+                "answer": "continue",
+                "difficulty": 2,
+                "classIDs": [6],
+                "type": "multichoice",
+                "options": ["Continue"]
+              },
+              {
+                "title": "What is Na+?",
+                "content": "Sodium with a positive charge (cation).",
+                "answer": "Cation",
+                "difficulty": 1,
+                "classIDs": [6],
+                "type": "multichoice",
+                "options": ["Anion", "Cation", "Element"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "name": "Propulsion Mecahnics",
+        "lessons": [
+          {
+            "name": "Rockets in 0G",
+            "questions": [
+              {
+                "title": "Derive the Tsiolkovsky rocket equation and explain its assumptions.",
+                "content": "Present a detailed derivation of the Tsiolkovsky (ideal rocket) equation, state all required assumptions, and describe how it limits practical rocket performance in a vacuum.",
+                "answer": "The Tsiolkovsky rocket equation: Δv = ve * ln(m0 / mf), where ve is effective exhaust velocity, m0 is initial mass, and mf is final mass; assumptions include constant exhaust velocity, no external forces, and instantaneous fuel burn.",
+                "difficulty": 5,
+                "classIDs": [7],
+                "type": "multichoice",
+                "options": [
+                  "It models momentum conservation with idealized conditions and exponential fuel dilution.",
+                  "It uses Newton's second law with variable mass and linear exhaust flow.",
+                  "Rocket equation assumes constant mass and variable exhaust velocity."
+                ]
+              },
+              {
+                "title": "How does the absence of external pressure in 0G affect nozzle expansion ratio design for rocket engines?",
+                "content": "Explain with equations how optimal rocket nozzle shape and expansion ratio are determined for engines operating exclusively in a vacuum and discuss the role of ambient pressure.",
+                "answer": "Optimal expansion ratio maximizes exhaust velocity by setting exit pressure to vacuum (zero); P_e = 0 appears in F = dot{m} * v_e + (P_e - P_0) * A_e; thus, A_e can be much larger in 0G where P_0 ≈ 0.",
+                "difficulty": 5,
+                "classIDs": [7],
+                "type": "multichoice",
+                "options": [
+                  "Larger expansion ratio with overexpanded nozzles is favored in 0G because there is no ambient pressure.",
+                  "Nozzle expansion ratio is irrelevant in vacuum conditions.",
+                  "Ambient pressure increases optimal exit pressure above zero in 0G."
+                ]
+             }
+            ]
+          },
+          {
+            "name": "Fuel Dynamics",
+            "questions": [
+              {
+                "title": "Explain the impact of nozzle throat area and chamber pressure on mass flow rate and thrust.",
+                "content": "Using the equations for mass flux, describe how varying the throat area and chamber pressure alters the performance of a chemical rocket engine.",
+                "answer": "In steady flow, mass flow rate ṁ = ρ * v * A_throat; increasing chamber pressure raises ρ and v, boosting ṁ and thus thrust; larger throat area A allows more flow but may reduce expansion efficiency.",
+                "difficulty": 5,
+                "classIDs": [7],
+                "type": "multichoice",
+                "options": [
+                  "Increasing chamber pressure or throat area generally increases mass flow and thrust, but overly large throats reduce expansion efficiency.",
+                  "Reducing throat area increases thrust indefinitely.",
+                  "Chamber pressure changes do not affect exhaust velocity."
+                ]
+              },
+              {
+                "title": "How does specific impulse relate to thermodynamic efficiency, and how is it limited by the propellant's enthalpy?",
+                "content": "Discuss how the theoretical maximum specific impulse for a given propellant is determined by the chemical energy released and the thermodynamic efficiency of the expansion process. Include relevant formulas.",
+                "answer": "Specific impulse I_sp is proportional to exhaust velocity (I_sp = v_e / g_0) and is limited by sqrt(2 * Δh) where Δh is change in specific enthalpy; thermodynamic losses (like non-ideal expansion) reduce actual I_sp below this theoretical limit.",
+                "difficulty": 5,
+                "classIDs": [7],
+                "type": "multichoice",
+                "options": [
+                  "Specific impulse increases with higher enthalpy change and is maximized when expansion is isentropic and complete.",
+                  "Specific impulse is unrelated to chemical energy of the propellant.",
+                  "Higher molecular mass always increases specific impulse."
+                ]
+              }
+            ]
+        }
+      ]
+    },
+      {
+        "id": 8,
+        "name": "Quantum Mechanics",
+        "lessons": [
+          {
+            "name": "What is Quantum Mecahnics?",
+            "questions": [
+              {
+                "title": "What does quantum mechanics study?",
+                "content": "It studies particles at the atomic and subatomic scale.",
+                "answer": "continue",
+                "difficulty": 2,
+                "classIDs": [8],
+                "type": "multichoice",
+                "options": ["Continue"]
+              },
+              {
+                "title": "How is quantum physics different from classical?",
+                "content": "In quantum, particles can be in multiple states at once.",
+                "answer": "continue",
+                "difficulty": 2,
+                "classIDs": [8],
+                "type": "multichoice",
+                "options": ["Continue"]
+              }
+            ]
+          },
+          {
+            "name": "Shrodinger's Cat",
+            "questions": [
+              {
+                "title": "What is Schrödinger's Cat?",
+                "content": "A thought experiment about quantum superposition.",
+                "answer": "continue",
+                "difficulty": 2,
+                "classIDs": [8],
+                "type": "multichoice",
+                "options": ["Continue"]
+              },
+              {
+                "title": "What does the cat represent?",
+                "content": "Until observed, it is both alive and dead.",
+                "answer": "Both",
+                "difficulty": 2,
+                "classIDs": [8],
+                "type": "multichoice",
+                "options": ["Alive", "Dead", "Both"]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

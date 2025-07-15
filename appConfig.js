@@ -47,6 +47,36 @@ function loadBlacklist() {
 let blacklist = loadBlacklist()
 
 
+// ---------- Users ------------ \\
+
+const userFilePath = './users.json';
+function loadUsers() {
+    if (fs.existsSync(userFilePath)) {
+        const data = fs.readFileSync(userFilePath, 'utf-8');
+        return JSON.parse(data);
+    }
+    return [];
+}
+
+function saveUsers(users) {
+    fs.writeFileSync(userFilePath, JSON.stringify(users, null, 2), 'utf-8');
+}
+
+class User {
+    constructor(username, password, id = users.length + 1) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+    }
+
+    getUserName() {
+        return this.username;
+    }
+}
+
+let users = loadUsers();
+
+
 
 // ---------- Cyphering ---------- \\
 
@@ -146,6 +176,52 @@ function testEncryption() {
 }
 
 
+
+// ---------- Courses ---------- \\
+
+const coursesFilePath = './courses.json';
+function loadCourses() {
+    if (fs.existsSync(coursesFilePath)) {
+        const data = fs.readFileSync(coursesFilePath, 'utf-8');
+        return JSON.parse(data);
+    }
+
+    // If JSON unavalable
+    return [];
+}
+
+let classes = loadCourses();
+
+class Class {
+    constructor(id, name, course, subcourse, difficulty = 1) {
+        this.name = name;
+        this.id = id;
+
+        this.course = course;
+        this.subcourse = subcourse;
+        this.difficulty = difficulty;
+
+        this.questions = [];
+    }
+}
+
+class Question {
+    constructor(title, content, answer, difficulty = 1, classIDs = [], { type = "text", options = [] } = {}) {
+        this.title = title;
+        this.content = content;
+        this.answer = answer;
+
+        this.type = type;
+        if (this.type == 'text') {
+            this.options = options;
+        }
+
+        this.difficulty = difficulty;
+        this.classIDs = classIDs;
+    }
+}
+
+
 // ---------- Exports ---------- \\
 
-export { whitelist, blacklist, caesarCipher, base64, testEncryption };
+export { whitelist, blacklist, caesarCipher, base64, testEncryption, User, users, saveUsers };

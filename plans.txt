@@ -1,0 +1,108 @@
+PLANNING SPACE
+
+The message on entering the "dark mode" using the key sequence should be
+
+```
+PLEASE WAIT...
+
+ACCESS GRANTED.
+
+PLEASE SELECT A PANIC KEY TO ESCAPE GAME:
+[PRESS ANY KEY] 'tab' // Any key works
+
+YOU HAVE SELECTED 'tab' AS YOUR ESCAPE KEY.
+IS THIS OK? (y/n) y
+
+ENTER URL: https://mygame.com/the-game-i-want-to-play/
+
+PLEASE WAIT...
+
+CYPHERING REQUEST... [PASS]
+ENCRYPTING REQUEST... [PASS]
+
+SENDING "GET(aHR0cHM6Ly9teWdhbWUuY29tL3RoZS1nYW1lLWktd2FudC10by1wbGF5Lw==)"... [PASS]
+
+REDIRECTING...
+```
+
+
+
+Main Structure
+
+Homepage
+|
+├── Courses
+|    ├── Math
+|    |    ├── Addition, Subtraction, Multiplication, Division
+|    |    |    ├── Lesson 1: What is Math?
+|    |    |    ├── Lesson 2: Addition: the Basics
+|    |    |    └── [and so on...]
+|    |    |
+|    |    ├── Powers and Roots
+|    |    |    ├── Lesson 1: Multipliation BUT BETTER
+|    |    |    ├── Lesson 2: Sqaring
+|    |    |    └── [and so on...]
+|    |    |
+|    |    ├── Trignometry
+|    |    |    ├── Lesson 1: Triangles
+|    |    |    ├── Lesson 2: SOH, CAH, and TOA
+|    |    |    └── [and so on...]
+|    |    |
+|    |    └── [Add more...]
+|    |
+|    ├── Science
+|    |    ├── Atoms and Elements
+|    |    |    ├── Lesson 1: Atoms
+|    |    |    ├── Lesson 2: Periodic Table
+|    |    |    └── [and so on...]
+|    |    |
+|    |    ├── Acids and Bases
+|    |    |    ├── Lesson 1: What defines an Acid and a Base?
+|    |    |    ├── Lesson 2: Chemical Differences
+|    |    |    └── [and so on...]
+|    |    |
+|    |    ├── Ionic Chemistry
+|    |    |    ├── Lesson 1: Ions: the Basics
+|    |    |    ├── Lesson 2: Ionic Table
+|    |    |    └── [and so on...]
+|    |    |
+|    |    ├── Propulsion Mecahnics
+|    |    |    ├── Lesson 1: Rockets in 0G
+|    |    |    ├── Lesson 2: Fuel Dynamics
+|    |    |    └── [and so on...]
+|    |    |
+|    |    ├── Quantum Mechanics
+|    |    |    ├── Lesson 1: What is Quantum Mecahnics?
+|    |    |    ├── Lesson 2: Shrodinger's Cat
+|    |    |    └── [and so on...]
+|    |    |
+|    |    └── [Add more...]
+|    |
+|    └── [Add more...]
+|
+├── Login
+|    └── [Login script...]
+|
+├── Store
+|    ├── Credits: ${Number of credits the user has collected}
+|    ├── Powerups
+|    |    └── [Some powerups, maybe a short-term credit boost]
+|    |
+|    └── Stock Market
+|
+├── Profile
+|    ├── My Access: ${Level of access, from Admin to Newbie}
+|    ├── Change Password
+|    |    └── [Password Change script...]
+|    |
+|    ├── My Courses
+|    |    └── Math - Trignometry - 4 out of 7 Lessons Complete
+|    |    └── Science - Propulsion Mechanics - 13 out of 200 lessons complete
+|    |
+|    └── Delete Account
+|         └── [Account deletion script...]
+|
+└── DARK SIDE
+     └── [Credit check]
+          ├── "Mainframe" Interface
+          └── Etc... (goto Proxy Structure)
