@@ -6,7 +6,7 @@ import readline from 'readline';
 import { spawn } from 'child_process';
 
 import { statusCode } from './errors.js'; // Custom error handler
-import { blacklist, whitelist, caesarCipher, base64, escapeSpecialChars, testEncryption } from './appConfig.js';
+import { blacklist, whitelist, caesarCipher, base64, testEncryption, User, users, saveUsers } from './appConfig.js';
 
 const app = express();
 const port = process.env.PORT || 1500;
