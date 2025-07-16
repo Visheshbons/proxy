@@ -3,9 +3,10 @@
 import express from 'express';
 import chalk from 'chalk';
 import readline from 'readline';
+import { spawn } from 'child_process';
 
 import { statusCode } from './errors.js'; // Custom error handler
-import { blacklist, whitelist, caesarCipher, base64, testEncryption } from './appConfig.js';
+import { blacklist, whitelist, caesarCipher, base64, escapeSpecialChars, testEncryption } from './appConfig.js';
 
 const app = express();
 const port = process.env.PORT || 1500;
@@ -71,6 +72,24 @@ app.listen(port, () => {
     rl.question('Test Encryption? (y/n): ', (confirmation) => {
         if (confirmation == "y") {
             testEncryption()
+        } else {
+            // View Black-entry
+            rl.question('View blackEntryInterface? (y/n): ', (confirmation) => {
+                if (confirmation == "y") {
+                    // Build the command and arguments
+                    const maintenancePath = './'; // Adjust as needed
+                    const child = spawn(
+                        'node',
+                        ['preview.js'],
+                        {
+                            cwd: maintenancePath,    // Set working directory
+                            detached: false,          // Detach from parent
+                            stdio: 'inherit',
+                            shell: true              // Use shell for Windows compatibility
+                    });
+                    child.unref(); // Allow the child to keep running after parent exits
+                }
+            });
         }
     });
 });

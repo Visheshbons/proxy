@@ -224,4 +224,4 @@ class Question {
 
 // ---------- Exports ---------- \\
 
-export { whitelist, blacklist, caesarCipher, base64, testEncryption, User, users, saveUsers };
+export { whitelist, blacklist, caesarCipher, base64, escapeSpecialChars, testEncryption, User, users, saveUsers };
