@@ -1,0 +1,154 @@
+<% pageTitle = subject + ' Year ' + year + ' - ' + topicName %>
+<%- include('partials/header') %>
+
+<main class="main-container">
+  <div class="breadcrumb">
+    <a href="/">Home</a> /
+    <a href="/subject/<%= subject %>"><%= subject %></a> /
+    <a href="/subject/<%= subject %>/year/<%= year %>">Year <%= year %></a> /
+    <span><%= topicName %></span>
+  </div>
+
+  <div class="roadmap-wrap" style="max-width:1000px;margin:28px auto;padding:20px;border-radius:12px;">
+    <div class="roadmap-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div>
+        <div class="roadmap-title" style="font-size:1.4rem;font-weight:700;"><%= topicName %></div>
+        <div class="roadmap-meta" style="color:var(--color-muted,#666);margin-top:4px;"><%= lessonCount %> lesson<%= lessonCount !== 1 ? 's' : '' %> available</div>
+      </div>
+      <div>
+        <a href="/subject/<%= subject %>/year/<%= year %>" class="btn btn-secondary">Back to Topics</a>
+      </div>
+    </div>
+
+    <ul class="roadmap-list" id="roadmapList" style="display:flex;flex-direction:column;gap:14px;padding:0;margin:0;list-style:none;">
+      <% for (let i = 1; i <= lessonCount; i++) { %>
+        <li class="roadmap-step" data-lesson="<%= i %>" data-index="<%= i - 1 %>" style="display:flex;align-items:center;gap:14px;cursor:default;">
+          <div class="roadmap-circle" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;border:3px solid var(--color-neutral-200,#ddd);background:var(--bg-secondary,#fafafa);">
+            <%= i %>
+          </div>
+          <div class="label" style="flex:1;display:flex;align-items:center;justify-content:space-between;padding-right:8px;">
+            <div class="roadmap-title-text" style="font-weight:600;">Lesson <%= i %></div>
+            <div class="roadmap-meta" id="meta-<%= i %>" style="color:var(--color-muted,#666);font-size:0.95rem;">Loading…</div>
+          </div>
+        </li>
+        <% if (i < lessonCount) { %>
+          <div class="roadmap-connector" style="height:18px;width:2px;background:var(--color-neutral-200,#ddd);margin-left:21px;margin-top:-6px;margin-bottom:-6px;align-self:stretch;"></div>
+        <% } %>
+      <% } %>
+    </ul>
+
+    <div class="roadmap-footer" style="margin-top:18px;display:flex;justify-content:flex-end;gap:8px;">
+      <button class="btn-small" id="resetProgress" style="padding:8px 12px;border-radius:8px;border:0;background:var(--color-primary,#2b6cb0);color:#fff;cursor:pointer;font-weight:600;">Reset Progress</button>
+    </div>
+  </div>
+</main>
+
+<script>
+  (function () {
+    const subject = <%- JSON.stringify(subject) %>;
+    const year = <%- JSON.stringify(year) %>;
+    const topic = <%- JSON.stringify(topicSlug) %>;
+    const lessonCount = <%- JSON.stringify(lessonCount) %>;
+    const key = 'completedLessons'; // localStorage key
+
+    function readCompleted() {
+      try {
+        return JSON.parse(localStorage.getItem(key) || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function lessonIdFor(n) {
+      return [subject, year, topic, n].join('|');
+    }
+
+    // Gather completed lessons for this subject/year/topic
+    const completedAll = readCompleted();
+    const completedForThis = completedAll.filter(s => s.startsWith(subject + '|' + year + '|' + topic + '|'));
+    const completedNumbers = completedForThis.map(s => parseInt(s.split('|').pop(), 10)).filter(Boolean).sort((a,b)=>a-b);
+    const maxCompleted = completedNumbers.length ? Math.max(...completedNumbers) : 0;
+
+    // Allowed set: all completed plus the next one after maxCompleted. Also allow lesson 1 if nothing completed.
+    const allowed = new Set(completedNumbers);
+    if (lessonCount > 0) {
+      const next = maxCompleted + 1;
+      if (next <= lessonCount) allowed.add(next);
+      if (maxCompleted === 0) allowed.add(1);
+    }
+
+    // Render each list item
+    for (let n = 1; n <= lessonCount; n++) {
+      const li = document.querySelector('[data-lesson="' + n + '"]');
+      if (!li) continue;
+      const meta = document.getElementById('meta-' + n);
+      const id = lessonIdFor(n);
+
+      if (completedForThis.includes(id)) {
+        li.classList.add('completed');
+        if (meta) meta.textContent = 'Completed';
+        const circle = li.querySelector('.roadmap-circle');
+        if (circle) {
+          circle.style.background = 'linear-gradient(135deg,#8ef7a1,#4cd964)';
+          circle.style.color = '#053';
+          circle.style.borderColor = '#4cd964';
+        }
+      } else if (allowed.has(n)) {
+        li.classList.add('unlocked');
+        if (meta) meta.textContent = 'Unlocked';
+        li.style.cursor = 'pointer';
+        li.addEventListener('click', () => {
+          // navigate to lesson page
+          const url = '/lesson/' + encodeURIComponent(subject) + '/' + encodeURIComponent(year) + '/' + encodeURIComponent(topic) + '/' + encodeURIComponent(n);
+          location.href = url;
+        });
+      } else {
+        li.classList.add('locked');
+        if (meta) meta.textContent = 'Locked';
+        li.style.opacity = '0.45';
+      }
+    }
+
+    document.getElementById('resetProgress').addEventListener('click', () => {
+      if (!confirm('Clear all completed lessons stored in localStorage?')) return;
+      localStorage.removeItem(key);
+      location.reload();
+    });
+
+    // Listen for cross-tab / in-page events to update UI if a lesson is completed elsewhere
+    window.addEventListener('storage', (ev) => {
+      if (ev.key === key) {
+        // simple full reload to reflect changes
+        location.reload();
+      }
+    });
+    window.addEventListener('lessonCompleted', (ev) => {
+      // update UI if possible otherwise reload
+      try {
+        const id = ev.detail && ev.detail.id;
+        if (!id) return location.reload();
+        const parts = id.split('|');
+        if (parts[0] !== subject || String(parts[1]) !== String(year) || parts[2] !== topic) return;
+        const n = parseInt(parts.pop(), 10);
+        const li = document.querySelector('[data-lesson="' + n + '"]');
+        if (li) {
+          li.classList.add('completed');
+          const meta = document.getElementById('meta-' + n);
+          if (meta) meta.textContent = 'Completed';
+          const circle = li.querySelector('.roadmap-circle');
+          if (circle) {
+            circle.style.background = 'linear-gradient(135deg,#8ef7a1,#4cd964)';
+            circle.style.color = '#053';
+            circle.style.borderColor = '#4cd964';
+          }
+        } else {
+          location.reload();
+        }
+      } catch (e) {
+        location.reload();
+      }
+    });
+  })();
+</script>
+
+<%- include('partials/footer') %>

@@ -1,7 +1,7 @@
 {
-  "name": "learning-hub",
+  "name": "proxy",
   "version": "1.0.0",
-  "description": "A comprehensive learning web app for students from Year 1 to 13",
+  "description": "A comprehensive learning web app for students from Year 1 to 13 (Trust)",
   "private": true,
   "main": "server.js",
   "type": "module",
@@ -19,6 +19,7 @@
     "ejs"
   ],
   "dependencies": {
+    "chalk": "^5.6.2",
     "ejs": "^3.1.10",
     "express": "^5.1.0"
   }

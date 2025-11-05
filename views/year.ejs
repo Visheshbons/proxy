@@ -18,7 +18,7 @@
   <% } else { %>
     <div class="bubble-grid">
       <% topics.forEach(topic => { %>
-        <a href="/lesson/<%= subject %>/<%= year %>/<%= topic.topicSlug %>/1" class="bubble bubble-topic">
+        <a href="/subject/<%= subject %>/year/<%= year %>/topic/<%= topic.topicSlug %>" class="bubble bubble-topic">
           <h2 class="bubble-title"><%= topic.topicName %></h2>
           <p class="bubble-description"><%= topic.lessonCount %> lesson<%= topic.lessonCount !== 1 ? 's' : '' %> available</p>
           <div class="bubble-arrow">→</div>
