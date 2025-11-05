@@ -15,63 +15,290 @@
         <span class="lesson-badge"><%= lesson.subject %></span>
         <span class="lesson-badge">Year <%= lesson.year %></span>
         <span class="lesson-badge">Lesson <%= lesson.lessonNumber %></span>
+        <div class="lives-display" id="livesDisplay">
+          <span class="life-icon">❤️</span>
+          <span class="life-icon">❤️</span>
+        </div>
       </div>
       <h1 class="lesson-title"><%= lesson.title %></h1>
       <p class="lesson-description"><%= lesson.description %></p>
     </header>
 
-    <div class="lesson-content">
-      <% lesson.content.forEach((section, index) => { %>
-        <div class="content-bubble content-<%= section.type %>">
-          <% if (section.type === 'introduction') { %>
-            <div class="section-icon">💡</div>
-            <p class="section-text"><%= section.text %></p>
-
-          <% } else if (section.type === 'concept') { %>
-            <div class="section-icon">🎯</div>
-            <% if (section.heading) { %>
-              <h3 class="section-heading"><%= section.heading %></h3>
-            <% } %>
-            <p class="section-text"><%= section.text %></p>
-
-          <% } else if (section.type === 'example') { %>
-            <div class="section-icon">✏️</div>
-            <h3 class="section-heading"><%= section.heading %></h3>
-            <% if (section.problem) { %>
-              <div class="example-problem">
-                <strong>Problem:</strong> <%= section.problem %>
-              </div>
-            <% } %>
-            <% if (section.solution) { %>
-              <div class="example-solution">
-                <strong>Solution:</strong>
-                <ol>
-                  <% section.solution.forEach(step => { %>
-                    <li><%= step %></li>
-                  <% }) %>
-                </ol>
-              </div>
-            <% } %>
-
-          <% } else if (section.type === 'practice') { %>
-            <div class="section-icon">✍️</div>
-            <h3 class="section-heading"><%= section.heading %></h3>
-            <% if (section.problems) { %>
-              <ul class="practice-list">
-                <% section.problems.forEach(problem => { %>
-                  <li><%= problem %></li>
-                <% }) %>
-              </ul>
-            <% } %>
-          <% } %>
-        </div>
-      <% }) %>
+    <div class="lesson-content" id="lessonContent">
+      <!-- Content sections will be shown one at a time -->
     </div>
 
-    <div class="lesson-navigation">
-      <a href="/subject/<%= subject %>/year/<%= year %>" class="btn btn-secondary">Back to Topics</a>
+    <div id="completionContainer" style="display: none;">
+      <div class="completion-message">
+        <div class="completion-icon">🎉</div>
+        <h2 class="completion-title">Lesson Complete!</h2>
+        <p class="completion-text">Great job! You've successfully completed this lesson.</p>
+        <a href="/subject/<%= subject %>/year/<%= year %>" class="btn btn-secondary">Back to Topics</a>
+      </div>
+    </div>
+
+    <div id="restartContainer" style="display: none;">
+      <div class="restart-message">
+        <h2 class="restart-title">Out of Lives!</h2>
+        <p>You've lost all your lives. Don't worry - learning takes practice!</p>
+        <button class="restart-button" onclick="restartLesson()">Restart Lesson</button>
+      </div>
     </div>
   </article>
 </main>
+
+<script>
+  // Lesson data
+  const lessonData = <%- JSON.stringify(lesson) %>;
+
+  // State management
+  let currentSectionIndex = 0;
+  let currentQuestionIndex = 0;
+  let lives = 2;
+  let userAnswer = '';
+  let answeredCorrectly = false;
+
+  // Initialize lesson
+  function init() {
+    showCurrentSection();
+  }
+
+  function showCurrentSection() {
+    const content = lessonData.content[currentSectionIndex];
+    const container = document.getElementById('lessonContent');
+
+    if (!content) {
+      showCompletion();
+      return;
+    }
+
+    const sectionDiv = document.createElement('div');
+    sectionDiv.className = 'content-section';
+    sectionDiv.innerHTML = renderSection(content);
+
+    container.innerHTML = '';
+    container.appendChild(sectionDiv);
+
+    // Trigger animation
+    setTimeout(() => sectionDiv.classList.add('visible'), 50);
+  }
+
+  function renderSection(section) {
+    let html = `<div class="content-bubble content-${section.type}">`;
+
+    if (section.type === 'introduction') {
+      html += `
+        <div class="section-icon">💡</div>
+        <p class="section-text">${section.text}</p>
+      `;
+    } else if (section.type === 'concept') {
+      html += `
+        <div class="section-icon">🎯</div>
+        ${section.heading ? `<h3 class="section-heading">${section.heading}</h3>` : ''}
+        <p class="section-text">${section.text}</p>
+      `;
+    } else if (section.type === 'example') {
+      html += `
+        <div class="section-icon">✏️</div>
+        <h3 class="section-heading">${section.heading}</h3>
+        ${section.problem ? `<div class="example-problem"><strong>Problem:</strong> ${section.problem}</div>` : ''}
+        ${section.solution ? `
+          <div class="example-solution">
+            <strong>Solution:</strong>
+            <ol>
+              ${section.solution.map(step => `<li>${step}</li>`).join('')}
+            </ol>
+          </div>
+        ` : ''}
+      `;
+    } else if (section.type === 'practice') {
+      html += `
+        <div class="section-icon">✍️</div>
+        <h3 class="section-heading">${section.heading}</h3>
+      `;
+
+      // Check if problems exist and if this is the question-answer format
+      if (section.problems && section.problems.length > 0) {
+        if (Array.isArray(section.problems[0])) {
+          // New format: questions with answers
+          html += '</div>'; // Close content bubble
+          html += renderPracticeQuestion(section.problems[currentQuestionIndex]);
+          return html;
+        } else {
+          // Old format: just a list of problems
+          html += `
+            <ul class="practice-list">
+              ${section.problems.map(problem => `<li>${problem}</li>`).join('')}
+            </ul>
+          `;
+        }
+      }
+    }
+
+    html += '</div>';
+
+    // Add continue button for non-practice sections or old format practice
+    html += `
+      <button class="next-button" onclick="nextSection()">
+        ${currentSectionIndex === lessonData.content.length - 1 ? 'Complete Lesson' : 'Continue'}
+      </button>
+    `;
+
+    return html;
+  }
+
+  function renderPracticeQuestion(questionData) {
+    const [question, correctAnswer] = questionData;
+
+    return `
+      <div class="question-container">
+        <div class="question-text">${question}</div>
+        <div style="margin-bottom: 20px;">
+          <input
+            type="text"
+            id="answerInput"
+            class="answer-input"
+            placeholder="Type your answer here..."
+            onkeypress="if(event.key === 'Enter') submitPracticeAnswer()"
+            style="width: 100%; padding: 15px; font-size: 1.1rem; border: 2px solid var(--color-neutral-200); border-radius: var(--border-radius-sm); background: var(--bg-primary); color: var(--text-primary);"
+          />
+        </div>
+        <div id="feedback" style="display: none;"></div>
+        <button class="next-button" id="submitBtn" onclick="submitPracticeAnswer()">Submit Answer</button>
+      </div>
+    `;
+  }
+
+  function submitPracticeAnswer() {
+    if (answeredCorrectly) {
+      nextPracticeQuestion();
+      return;
+    }
+
+    const section = lessonData.content[currentSectionIndex];
+    const [question, correctAnswer] = section.problems[currentQuestionIndex];
+    const userInput = document.getElementById('answerInput').value.trim();
+
+    if (!userInput) {
+      alert('Please enter an answer!');
+      return;
+    }
+
+    const feedback = document.getElementById('feedback');
+    const input = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Convert both to strings and compare (handles both string and number answers)
+    const isCorrect = userInput.toLowerCase() === String(correctAnswer).toLowerCase();
+
+    // Disable input
+    input.disabled = true;
+
+    if (isCorrect) {
+      feedback.className = 'question-feedback correct';
+      feedback.textContent = '✅ Correct! Well done!';
+      feedback.style.display = 'block';
+      input.style.borderColor = 'var(--color-success)';
+      answeredCorrectly = true;
+
+      // Check if there are more questions
+      if (currentQuestionIndex < section.problems.length - 1) {
+        submitBtn.textContent = 'Next Question';
+      } else {
+        submitBtn.textContent = currentSectionIndex === lessonData.content.length - 1 ? 'Complete Lesson' : 'Continue';
+      }
+      submitBtn.onclick = nextPracticeQuestion;
+    } else {
+      feedback.className = 'question-feedback incorrect';
+      feedback.textContent = `❌ Incorrect. The correct answer is: ${correctAnswer}`;
+      feedback.style.display = 'block';
+      input.style.borderColor = 'var(--color-danger)';
+
+      // Lose a life
+      lives--;
+      updateLivesDisplay();
+
+      if (lives <= 0) {
+        showRestart();
+      } else {
+        answeredCorrectly = true;
+        // Check if there are more questions
+        if (currentQuestionIndex < section.problems.length - 1) {
+          submitBtn.textContent = 'Next Question';
+        } else {
+          submitBtn.textContent = currentSectionIndex === lessonData.content.length - 1 ? 'Complete Lesson' : 'Continue';
+        }
+        submitBtn.onclick = nextPracticeQuestion;
+      }
+    }
+  }
+
+  function nextPracticeQuestion() {
+    const section = lessonData.content[currentSectionIndex];
+    currentQuestionIndex++;
+    answeredCorrectly = false;
+
+    if (currentQuestionIndex >= section.problems.length) {
+      // Finished all questions in this section
+      currentQuestionIndex = 0;
+      nextSection();
+    } else {
+      // Show next question
+      showCurrentSection();
+    }
+  }
+
+  function nextSection() {
+    currentSectionIndex++;
+    currentQuestionIndex = 0;
+    answeredCorrectly = false;
+
+    if (currentSectionIndex >= lessonData.content.length) {
+      showCompletion();
+    } else {
+      showCurrentSection();
+    }
+  }
+
+  function updateLivesDisplay() {
+    const livesDisplay = document.getElementById('livesDisplay');
+    const icons = livesDisplay.querySelectorAll('.life-icon');
+
+    icons.forEach((icon, index) => {
+      if (index >= lives) {
+        icon.classList.add('life-lost');
+      }
+    });
+  }
+
+  function showCompletion() {
+    document.getElementById('lessonContent').style.display = 'none';
+    document.getElementById('completionContainer').style.display = 'block';
+  }
+
+  function showRestart() {
+    document.getElementById('lessonContent').style.display = 'none';
+    document.getElementById('restartContainer').style.display = 'block';
+  }
+
+  function restartLesson() {
+    currentSectionIndex = 0;
+    currentQuestionIndex = 0;
+    lives = 2;
+    answeredCorrectly = false;
+
+    document.getElementById('lessonContent').style.display = 'block';
+    document.getElementById('restartContainer').style.display = 'none';
+
+    // Reset lives display
+    const icons = document.querySelectorAll('.life-icon');
+    icons.forEach(icon => icon.classList.remove('life-lost'));
+
+    showCurrentSection();
+  }
+
+  // Start the lesson
+  init();
+</script>
 
 <%- include('partials/footer') %>

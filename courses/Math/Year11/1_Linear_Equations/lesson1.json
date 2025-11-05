@@ -28,9 +28,9 @@
       "type": "practice",
       "heading": "Try These",
       "problems": [
-        "3x + 7 = 22",
-        "5x - 3 = 17",
-        "4x + 1 = 21"
+        ["Solve for x: 3x + 7 = 22", "5"],
+        ["Solve for x: 5x - 3 = 17", "4"],
+        ["Solve for x: 4x + 1 = 21", "5"]
       ]
     }
   ]

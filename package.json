@@ -4,6 +4,7 @@
   "description": "A comprehensive learning web app for students from Year 1 to 13",
   "private": true,
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",

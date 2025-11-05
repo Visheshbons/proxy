@@ -28,9 +28,9 @@
       "type": "practice",
       "heading": "Your Turn",
       "problems": [
-        "Count to 5 out loud",
-        "Count your fingers on one hand",
-        "Draw 4 stars and count them"
+        ["What number comes after 9?", "10"],
+        ["What number comes before 5?", "4"],
+        ["What number comes between 3 and 5?", "4"]
       ]
     }
   ]
