@@ -1,0 +1,47 @@
+{
+  "subject": "Physics",
+  "year": 13,
+  "topic": "Rocket Mechanics",
+  "lessonNumber": 3,
+  "title": "Multistage Rockets",
+  "description": "Learn why rockets use multiple stages to reach higher velocities.",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "Multistage rockets discard empty fuel tanks to reduce mass and improve efficiency."
+    },
+    {
+      "type": "concept",
+      "heading": "Advantages of Staging",
+      "text": "Each stage has its own engines and fuel. When one stage is exhausted, it detaches, allowing the next stage to fire with less mass."
+    },
+    {
+      "type": "example",
+      "heading": "Two-Stage Rocket Example",
+      "problem": "Stage 1: Δv₁ = 2000 m/s, Stage 2: Δv₂ = 2500 m/s. Find total Δv.",
+      "solution": ["4500"]
+    },
+    {
+      "type": "practice",
+      "heading": "Your Turn",
+      "problems": [
+        ["If Stage 1 gives 1500 and Stage 2 gives 2000, total Δv?", "3500"],
+        ["If Stage 1 gives 1800 and Stage 2 gives 2200, total Δv?", "4000"],
+        ["If Stage 1 = 2500, Stage 2 = 2500, total?", "5000"],
+        ["If 3 stages: 1000, 1200, 1400, total Δv?", "3600"],
+        [
+          "If Stage 1 = 2000, Stage 2 = 1500, Stage 3 = 1000, total Δv?",
+          "4500"
+        ],
+        [
+          "If one stage provides 40% of total Δv and equals 2000, total Δv?",
+          "5000"
+        ],
+        ["If Stage 1 = 1600 and Stage 2 = 2400, total?", "4000"],
+        ["If each of 3 stages provides 1800 Δv, total?", "5400"],
+        ["If Stage 1 = 2200, Stage 2 = 2300, total?", "4500"],
+        ["If Stage 1 = 2000, Stage 2 = 2000, Stage 3 = 2000, total?", "6000"]
+      ]
+    }
+  ]
+}

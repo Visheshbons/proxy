@@ -1,0 +1,41 @@
+{
+  "subject": "Physics",
+  "year": 13,
+  "topic": "Rocket Mechanics",
+  "lessonNumber": 5,
+  "title": "Efficiency and Modern Propulsion Systems",
+  "description": "Learn about specific impulse, efficiency, and advanced propulsion technologies.",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "Modern rocketry focuses on improving fuel efficiency through advanced propulsion."
+    },
+    {
+      "type": "concept",
+      "heading": "Specific Impulse (Isp)",
+      "text": "Isp = Thrust / (mass flow × g₀)"
+    },
+    {
+      "type": "example",
+      "heading": "Isp Example",
+      "problem": "A rocket has thrust = 3000 N, mass flow = 1 kg/s, g₀ = 9.81. Find Isp.",
+      "solution": ["305"]
+    },
+    {
+      "type": "practice",
+      "heading": "Your Turn",
+      "problems": [
+        ["If thrust = 5000, mass flow = 2, g₀ = 9.81, Isp?", "255"],
+        ["If thrust = 4000, mass flow = 1.5, g₀ = 9.81, Isp?", "272"],
+        ["If thrust = 9800, mass flow = 4, g₀ = 9.81, Isp?", "250"],
+        ["If thrust = 2943, mass flow = 1, g₀ = 9.81, Isp?", "300"],
+        ["If thrust = 8829, mass flow = 3, g₀ = 9.81, Isp?", "300"],
+        ["If Isp = 300 and mass flow = 2, g₀ = 9.81, thrust?", "5886"],
+        ["If Isp = 250 and mass flow = 1.5, g₀ = 9.81, thrust?", "3679"],
+        ["If thrust = 4905, Isp = 500, g₀ = 9.81, find mass flow.", "1"],
+        ["If Isp = 305, thrust = 6000, g₀ = 9.81, find mass flow.", "2"],
+        ["If Isp = 450 and mass flow = 1, g₀ = 9.81, find thrust.", "4415"]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "subject": "Physics",
+  "year": 13,
+  "topic": "Rocket Mechanics",
+  "lessonNumber": 1,
+  "title": "Basics of Rocket Thrust",
+  "description": "Understand how rockets generate thrust and how Newton's laws apply.",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "Rockets move by expelling gas at high speeds in one direction to produce thrust in the opposite direction."
+    },
+    {
+      "type": "concept",
+      "heading": "Newton’s Third Law in Rocketry",
+      "text": "For every action, there is an equal and opposite reaction. When gases are pushed out of the rocket nozzle, the rocket is pushed forward."
+    },
+    {
+      "type": "example",
+      "heading": "Thrust Example",
+      "problem": "A rocket expels 2 kg/s of exhaust at 1500 m/s. What is the thrust?",
+      "solution": ["3000"]
+    },
+    {
+      "type": "practice",
+      "heading": "Your Turn",
+      "problems": [
+        ["If a rocket expels 5 kg/s at 2000 m/s, what is the thrust?", "10000"],
+        [
+          "If thrust equals 4000 N and exhaust velocity is 1000 m/s, what is mass flow rate?",
+          "4"
+        ],
+        [
+          "If thrust = 6000 N and mass flow = 3 kg/s, find exhaust velocity.",
+          "2000"
+        ],
+        ["If exhaust velocity doubles, how does thrust change (factor)?", "2"],
+        [
+          "If exhaust velocity = 2500 m/s and mass flow = 1.2 kg/s, find thrust.",
+          "3000"
+        ],
+        ["If exhaust = 3 kg/s at 1800 m/s, thrust?", "5400"],
+        [
+          "If thrust = 9600 and exhaust velocity = 2400, find mass flow rate.",
+          "4"
+        ],
+        [
+          "A rocket produces 12000 N thrust at 3 kg/s. Find exhaust velocity.",
+          "4000"
+        ],
+        ["If exhaust velocity = 2200 and mass flow = 2.5, thrust?", "5500"],
+        ["If thrust = 8000 and exhaust = 2000, find mass flow rate.", "4"]
+      ]
+    }
+  ]
+}

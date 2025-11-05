@@ -1,0 +1,44 @@
+{
+  "subject": "Physics",
+  "year": 13,
+  "topic": "Rocket Mechanics",
+  "lessonNumber": 4,
+  "title": "Escape Velocity and Orbital Dynamics",
+  "description": "Understand how rockets achieve orbit and escape Earth’s gravity.",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "To enter orbit or escape a planet, a rocket must reach specific velocities related to gravity and radius."
+    },
+    {
+      "type": "concept",
+      "heading": "Escape Velocity Formula",
+      "text": "v_escape = sqrt(2GM / R)"
+    },
+    {
+      "type": "example",
+      "heading": "Escape from Earth",
+      "problem": "Find Earth’s escape velocity.",
+      "solution": ["11200"]
+    },
+    {
+      "type": "practice",
+      "heading": "Your Turn",
+      "problems": [
+        ["Earth escape velocity (m/s)?", "11200"],
+        ["Low Earth orbit velocity (m/s)?", "7800"],
+        ["If planet mass doubles, escape velocity changes by factor?", "1.41"],
+        ["If radius doubles, escape velocity changes by factor?", "0.71"],
+        ["If G=6.67e-11, M=5.97e24, R=6.37e6, find v_escape (m/s).", "11200"],
+        ["If Earth’s escape velocity = 11.2 km/s, convert to m/s.", "11200"],
+        [
+          "If escape velocity = sqrt(2GM/R) and G, M constant, what happens when R halves (factor)?",
+          "1.41"
+        ],
+        ["If Mars escape velocity = 5.0 km/s, what is that in m/s?", "5000"],
+        ["If Moon escape velocity = 2.4 km/s, m/s?", "2400"],
+        ["If Jupiter escape velocity = 59.5 km/s, m/s?", "59500"]
+      ]
+    }
+  ]
+}

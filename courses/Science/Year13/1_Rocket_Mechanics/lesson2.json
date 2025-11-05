@@ -1,0 +1,44 @@
+{
+  "subject": "Physics",
+  "year": 13,
+  "topic": "Rocket Mechanics",
+  "lessonNumber": 2,
+  "title": "The Rocket Equation",
+  "description": "Explore Tsiolkovsky’s Rocket Equation and its importance in spaceflight.",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "The rocket equation relates velocity change to exhaust velocity and mass ratio."
+    },
+    {
+      "type": "concept",
+      "heading": "Tsiolkovsky Rocket Equation",
+      "text": "Δv = ve × ln(m0 / mf), where ve is exhaust velocity, m0 is initial mass, and mf is final mass."
+    },
+    {
+      "type": "example",
+      "heading": "Velocity Change Example",
+      "problem": "If ve = 2500 m/s, m0 = 5000 kg, mf = 2000 kg, find Δv.",
+      "solution": ["2297"]
+    },
+    {
+      "type": "practice",
+      "heading": "Your Turn",
+      "problems": [
+        [
+          "If m0 = 4000 kg and mf = 2000 kg with ve = 2000 m/s, find Δv.",
+          "1386"
+        ],
+        ["If m0 = 5000 and mf = 2500 with ve = 3000, find Δv.", "2079"],
+        ["If m0 = 4500 and mf = 1500 with ve = 2500, find Δv.", "2747"],
+        ["If m0/mf = 3 and ve = 3000, find Δv.", "3296"],
+        ["If ve = 2000 and Δv = 2773, find m0/mf ratio.", "4"],
+        ["If Δv = 1000 and ve = 2500, find m0/mf ratio.", "1.49"],
+        ["If m0/mf = 2 and ve = 2000, find Δv.", "1386"],
+        ["If m0 = 10000, mf = 5000, ve = 2800, find Δv.", "1940"],
+        ["If m0 = 8000, mf = 4000, ve = 2400, find Δv.", "1664"],
+        ["If Δv = 1500 and ve = 2500, find m0/mf ratio.", "1.82"]
+      ]
+    }
+  ]
+}
