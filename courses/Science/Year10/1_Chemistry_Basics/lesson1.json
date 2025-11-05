@@ -1,0 +1,43 @@
+{
+  "subject": "Science",
+  "year": 10,
+  "topic": "Chemistry Basics",
+  "lessonNumber": 1,
+  "title": "Introduction to Atoms and Elements",
+  "description": "Learn about the building blocks of matter",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "Everything around us is made of atoms. Understanding atoms is key to understanding chemistry."
+    },
+    {
+      "type": "concept",
+      "heading": "What is an Atom?",
+      "text": "An atom is the smallest unit of matter that retains the properties of an element. It consists of protons, neutrons, and electrons."
+    },
+    {
+      "type": "concept",
+      "heading": "Parts of an Atom",
+      "text": "Protons: Positive charge, found in nucleus. Neutrons: No charge, found in nucleus. Electrons: Negative charge, orbit the nucleus."
+    },
+    {
+      "type": "example",
+      "heading": "Carbon Atom",
+      "problem": "Carbon has 6 protons, 6 neutrons, and 6 electrons",
+      "solution": [
+        "Atomic number (protons) = 6",
+        "Mass number (protons + neutrons) = 12",
+        "The electrons balance the positive charge of the protons"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Questions",
+      "problems": [
+        "What is the atomic number of an element with 8 protons?",
+        "If an atom has 7 protons and 7 neutrons, what is its mass number?",
+        "Which particle determines the element's identity?"
+      ]
+    }
+  ]
+}

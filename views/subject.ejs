@@ -1,0 +1,31 @@
+<% pageTitle = subject + ' - Choose Your Year' %>
+<%- include('partials/header') %>
+
+<main class="main-container">
+  <div class="breadcrumb">
+    <a href="/">Home</a> / <span><%= subject %></span>
+  </div>
+
+  <div class="hero-section">
+    <h1 class="hero-title"><%= subject %></h1>
+    <p class="hero-subtitle">Select your year level</p>
+  </div>
+
+  <div class="bubble-grid bubble-grid-dense">
+    <% for (let year = 1; year <= 13; year++) { %>
+      <% if (years[year] && years[year].length > 0) { %>
+        <a href="/subject/<%= subject %>/year/<%= year %>" class="bubble bubble-year">
+          <div class="bubble-year-number">Year <%= year %></div>
+          <p class="bubble-topic-count"><%= years[year].length %> topic<%= years[year].length !== 1 ? 's' : '' %></p>
+        </a>
+      <% } else { %>
+        <div class="bubble bubble-year bubble-disabled">
+          <div class="bubble-year-number">Year <%= year %></div>
+          <p class="bubble-topic-count">Coming soon</p>
+        </div>
+      <% } %>
+    <% } %>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

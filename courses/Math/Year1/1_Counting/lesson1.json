@@ -1,0 +1,37 @@
+{
+  "subject": "Math",
+  "year": 1,
+  "topic": "Counting",
+  "lessonNumber": 1,
+  "title": "Counting to 10",
+  "description": "Learn to count from 1 to 10",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "Let's learn to count! Counting helps us know how many things we have."
+    },
+    {
+      "type": "concept",
+      "heading": "Numbers 1 to 10",
+      "text": "1 (one), 2 (two), 3 (three), 4 (four), 5 (five), 6 (six), 7 (seven), 8 (eight), 9 (nine), 10 (ten)"
+    },
+    {
+      "type": "example",
+      "heading": "Counting Objects",
+      "problem": "How many apples? 🍎 🍎 🍎",
+      "solution": [
+        "Point to each apple and count: 1, 2, 3",
+        "There are 3 apples!"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Your Turn",
+      "problems": [
+        "Count to 5 out loud",
+        "Count your fingers on one hand",
+        "Draw 4 stars and count them"
+      ]
+    }
+  ]
+}

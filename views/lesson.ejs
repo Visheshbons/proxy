@@ -1,0 +1,77 @@
+<% pageTitle = lesson.title + ' - ' + lesson.subject %>
+<%- include('partials/header') %>
+
+<main class="main-container">
+  <div class="breadcrumb">
+    <a href="/">Home</a> /
+    <a href="/subject/<%= subject %>"><%= subject %></a> /
+    <a href="/subject/<%= subject %>/year/<%= year %>">Year <%= year %></a> /
+    <span><%= lesson.topic %></span>
+  </div>
+
+  <article class="lesson-container">
+    <header class="lesson-header">
+      <div class="lesson-meta">
+        <span class="lesson-badge"><%= lesson.subject %></span>
+        <span class="lesson-badge">Year <%= lesson.year %></span>
+        <span class="lesson-badge">Lesson <%= lesson.lessonNumber %></span>
+      </div>
+      <h1 class="lesson-title"><%= lesson.title %></h1>
+      <p class="lesson-description"><%= lesson.description %></p>
+    </header>
+
+    <div class="lesson-content">
+      <% lesson.content.forEach((section, index) => { %>
+        <div class="content-bubble content-<%= section.type %>">
+          <% if (section.type === 'introduction') { %>
+            <div class="section-icon">💡</div>
+            <p class="section-text"><%= section.text %></p>
+
+          <% } else if (section.type === 'concept') { %>
+            <div class="section-icon">🎯</div>
+            <% if (section.heading) { %>
+              <h3 class="section-heading"><%= section.heading %></h3>
+            <% } %>
+            <p class="section-text"><%= section.text %></p>
+
+          <% } else if (section.type === 'example') { %>
+            <div class="section-icon">✏️</div>
+            <h3 class="section-heading"><%= section.heading %></h3>
+            <% if (section.problem) { %>
+              <div class="example-problem">
+                <strong>Problem:</strong> <%= section.problem %>
+              </div>
+            <% } %>
+            <% if (section.solution) { %>
+              <div class="example-solution">
+                <strong>Solution:</strong>
+                <ol>
+                  <% section.solution.forEach(step => { %>
+                    <li><%= step %></li>
+                  <% }) %>
+                </ol>
+              </div>
+            <% } %>
+
+          <% } else if (section.type === 'practice') { %>
+            <div class="section-icon">✍️</div>
+            <h3 class="section-heading"><%= section.heading %></h3>
+            <% if (section.problems) { %>
+              <ul class="practice-list">
+                <% section.problems.forEach(problem => { %>
+                  <li><%= problem %></li>
+                <% }) %>
+              </ul>
+            <% } %>
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+
+    <div class="lesson-navigation">
+      <a href="/subject/<%= subject %>/year/<%= year %>" class="btn btn-secondary">Back to Topics</a>
+    </div>
+  </article>
+</main>
+
+<%- include('partials/footer') %>

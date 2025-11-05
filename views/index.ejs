@@ -1,0 +1,37 @@
+<% pageTitle = 'Learning Hub - Choose Your Subject' %>
+<%- include('partials/header') %>
+
+<main class="main-container">
+  <div class="hero-section">
+    <h1 class="hero-title">Welcome to Learning Hub</h1>
+    <p class="hero-subtitle">Choose a subject to begin your learning journey</p>
+  </div>
+
+  <div class="bubble-grid">
+    <a href="/subject/Math" class="bubble bubble-math">
+      <div class="bubble-icon">📐</div>
+      <h2 class="bubble-title">Mathematics</h2>
+      <p class="bubble-description">Numbers, equations, and problem-solving</p>
+    </a>
+
+    <a href="/subject/Science" class="bubble bubble-science">
+      <div class="bubble-icon">🔬</div>
+      <h2 class="bubble-title">Science</h2>
+      <p class="bubble-description">Explore the natural world</p>
+    </a>
+
+    <a href="/subject/English" class="bubble bubble-english">
+      <div class="bubble-icon">📚</div>
+      <h2 class="bubble-title">English</h2>
+      <p class="bubble-description">Language, literature, and writing</p>
+    </a>
+
+    <a href="/subject/SocialScience" class="bubble bubble-social">
+      <div class="bubble-icon">🌍</div>
+      <h2 class="bubble-title">Social Science</h2>
+      <p class="bubble-description">History, geography, and society</p>
+    </a>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

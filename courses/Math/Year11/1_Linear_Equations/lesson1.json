@@ -1,0 +1,37 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Linear Equations",
+  "lessonNumber": 1,
+  "title": "Introduction to Linear Equations",
+  "description": "Understanding the basics of linear equations and how to solve them",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "Linear equations are equations where the highest power of the variable is 1. They form straight lines when graphed."
+    },
+    {
+      "type": "concept",
+      "heading": "Standard Form",
+      "text": "A linear equation can be written as: ax + b = c, where a, b, and c are constants and x is the variable."
+    },
+    {
+      "type": "example",
+      "heading": "Example 1",
+      "problem": "2x + 5 = 13",
+      "solution": [
+        "Step 1: Subtract 5 from both sides: 2x = 8",
+        "Step 2: Divide both sides by 2: x = 4"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Try These",
+      "problems": [
+        "3x + 7 = 22",
+        "5x - 3 = 17",
+        "4x + 1 = 21"
+      ]
+    }
+  ]
+}

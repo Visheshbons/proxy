@@ -1,0 +1,49 @@
+{
+  "subject": "Social Science",
+  "year": 8,
+  "topic": "Geography",
+  "lessonNumber": 1,
+  "title": "Understanding Climate Zones",
+  "description": "Explore the different climate zones around the world",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "Earth has different climate zones based on temperature, precipitation, and location. Understanding these zones helps us understand how people live in different parts of the world."
+    },
+    {
+      "type": "concept",
+      "heading": "Major Climate Zones",
+      "text": "There are five major climate zones: Tropical, Dry, Temperate, Continental, and Polar."
+    },
+    {
+      "type": "concept",
+      "heading": "Tropical Climate",
+      "text": "Found near the equator, tropical climates are hot and humid year-round with significant rainfall. Examples: Amazon Rainforest, Congo Basin."
+    },
+    {
+      "type": "concept",
+      "heading": "Polar Climate",
+      "text": "Located near the poles, these regions are extremely cold with little precipitation. Examples: Antarctica, Arctic regions."
+    },
+    {
+      "type": "example",
+      "heading": "Climate and Human Activity",
+      "problem": "How does climate affect where people live?",
+      "solution": [
+        "Tropical zones: People build houses elevated to deal with humidity and rainfall",
+        "Polar zones: Few permanent settlements due to extreme cold",
+        "Temperate zones: Most densely populated due to moderate climate",
+        "Desert zones: Settlements near water sources, architecture designed for heat"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Think About It",
+      "problems": [
+        "Which climate zone do you live in?",
+        "How has your local climate influenced the architecture in your area?",
+        "What crops can be grown in tropical vs temperate climates?"
+      ]
+    }
+  ]
+}

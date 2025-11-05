@@ -1,0 +1,31 @@
+<% pageTitle = subject + ' Year ' + year + ' - Topics' %>
+<%- include('partials/header') %>
+
+<main class="main-container">
+  <div class="breadcrumb">
+    <a href="/">Home</a> / <a href="/subject/<%= subject %>"><%= subject %></a> / <span>Year <%= year %></span>
+  </div>
+
+  <div class="hero-section">
+    <h1 class="hero-title"><%= subject %> - Year <%= year %></h1>
+    <p class="hero-subtitle">Choose a topic to start learning</p>
+  </div>
+
+  <% if (topics.length === 0) { %>
+    <div class="empty-state">
+      <p>No topics available yet. Check back soon!</p>
+    </div>
+  <% } else { %>
+    <div class="bubble-grid">
+      <% topics.forEach(topic => { %>
+        <a href="/lesson/<%= subject %>/<%= year %>/<%= topic.topicSlug %>/1" class="bubble bubble-topic">
+          <h2 class="bubble-title"><%= topic.topicName %></h2>
+          <p class="bubble-description"><%= topic.lessonCount %> lesson<%= topic.lessonCount !== 1 ? 's' : '' %> available</p>
+          <div class="bubble-arrow">→</div>
+        </a>
+      <% }) %>
+    </div>
+  <% } %>
+</main>
+
+<%- include('partials/footer') %>

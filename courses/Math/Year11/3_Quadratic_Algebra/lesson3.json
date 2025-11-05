@@ -1,0 +1,54 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Quadratic Algebra",
+  "lessonNumber": 3,
+  "title": "Solving Quadratic Equations by Factoring",
+  "description": "Learn how to solve quadratic equations using the factoring method",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "In this lesson, we'll explore how to solve quadratic equations by factoring. This is one of the most fundamental techniques in algebra."
+    },
+    {
+      "type": "concept",
+      "heading": "What is Factoring?",
+      "text": "Factoring is the process of breaking down a quadratic expression into simpler expressions that multiply together to give the original equation."
+    },
+    {
+      "type": "example",
+      "heading": "Example 1: Simple Factoring",
+      "problem": "x² + 5x + 6 = 0",
+      "solution": [
+        "Step 1: Find two numbers that multiply to 6 and add to 5",
+        "Those numbers are 2 and 3",
+        "Step 2: Factor: (x + 2)(x + 3) = 0",
+        "Step 3: Set each factor to zero: x + 2 = 0 or x + 3 = 0",
+        "Step 4: Solve: x = -2 or x = -3"
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Example 2: Factoring with Leading Coefficient",
+      "problem": "2x² + 7x + 3 = 0",
+      "solution": [
+        "Step 1: Find factors of 2×3 = 6 that add to 7",
+        "Those numbers are 1 and 6",
+        "Step 2: Rewrite: 2x² + x + 6x + 3 = 0",
+        "Step 3: Factor by grouping: x(2x + 1) + 3(2x + 1) = 0",
+        "Step 4: Factor out common term: (x + 3)(2x + 1) = 0",
+        "Step 5: Solve: x = -3 or x = -1/2"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Practice Problems",
+      "problems": [
+        "x² + 7x + 12 = 0",
+        "x² - 5x + 6 = 0",
+        "2x² + 5x + 2 = 0",
+        "3x² - 11x + 6 = 0"
+      ]
+    }
+  ]
+}
