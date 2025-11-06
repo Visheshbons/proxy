@@ -83,7 +83,7 @@ function log(msg, type = "info") {
       console.log(prefix, msg);
       break;
     case "warning":
-      prefix = `[${chalk.yellow("WARNING")}]`;
+      prefix = `[${chalk.yellow("WARN")}]`;
       console.warn(prefix, msg);
       break;
     case "debug":
@@ -550,10 +550,11 @@ app.get("/proxy", requireAuth, require1KCredits, (req, res) => {
 
 // 404 Handler
 app.use((req, res) => {
+  log(`404 at ${chalk.grey.italic(req.originalUrl)}`, "warning");
   res.status(404).send(`
     <center><pre>
       ERR_404_PAGE_NOT_FOUND<br>
-      Page not found<br>
+      Page not found ¯\\_(ツ)_/¯<br>
       Please check the URL or try again later.
     </pre></center>
   `);
@@ -565,7 +566,7 @@ app.use((err, req, res, next) => {
   res.status(500).send(`
     <center><pre>
       ERR_500_INTERNAL_SERVER_ERROR<br>
-      Something has gone seriously wrong.<br>
+      Something has gone seriously wrong. ¯\\_(ツ)_/¯<br>
       Please contact the developer at <a href="mailto:vishesh.kudva@outlook.com">vishesh.kudva@outlook.com</a>.
     </pre></center>
   `);

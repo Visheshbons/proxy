@@ -1,6 +1,6 @@
 {
   "name": "learning-hub",
-  "version": "2.0.0",
+  "version": "0.4.2",
   "description": "A comprehensive learning web app for students from Year 1 to 13 with user accounts and progress tracking",
   "private": true,
   "main": "server.js",
@@ -9,7 +9,8 @@
     "start": "node server.js",
     "dev": "node server.js",
     "build": "npm install",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "runaway": "npm run runaway"
   },
   "keywords": [
     "education",
