@@ -246,9 +246,17 @@ app.post("/auth/login", async (req, res) => {
 });
 
 app.get("/auth/logout", (req, res) => {
-  req.session.destroy();
-  res.redirect("/");
-  log(`User ${chalk.grey.italic(user.username)} logged out`, "info");
+  const username = req.user ? req.user.username : "User";
+
+  req.session.destroy((err) => {
+    if (err) {
+      log(`Session destruction error for ${username}: ${err.message}`, "error");
+    }
+
+    log(`User ${chalk.grey.italic(username)} logged out`, "info");
+
+    res.redirect("/");
+  });
 });
 
 // Profile Route
@@ -538,6 +546,23 @@ app.get("/proxy", requireAuth, require1KCredits, (req, res) => {
     `User ${chalk.grey.italic(req.user.username)} tried to access ${chalk.grey.italic("/proxy")}`,
     "warning",
   );
+});
+
+// 404 Handler
+app.use((req, res) => {
+  res.status(404).render("error", {
+    message: "Page not found",
+    user: req.user,
+  });
+});
+
+// 500 Handler
+app.use((err, req, res, next) => {
+  log(`Internal Server Error: ${err.message}`, "error");
+  res.status(500).render("error", {
+    message: "Internal Server Error",
+    user: req.user,
+  });
 });
 
 app.listen(PORT, "0.0.0.0", async () => {
