@@ -1,7 +1,7 @@
 {
-  "name": "proxy",
-  "version": "1.0.0",
-  "description": "A comprehensive learning web app for students from Year 1 to 13 (Trust)",
+  "name": "learning-hub",
+  "version": "2.0.0",
+  "description": "A comprehensive learning web app for students from Year 1 to 13 with user accounts and progress tracking",
   "private": true,
   "main": "server.js",
   "type": "module",
@@ -16,11 +16,19 @@
     "learning",
     "nodejs",
     "express",
-    "ejs"
+    "ejs",
+    "mongodb",
+    "authentication"
   ],
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "chalk": "^5.6.2",
+    "connect-mongo": "^5.1.0",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.8.4"
   }
 }

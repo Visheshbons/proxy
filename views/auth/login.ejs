@@ -1,0 +1,75 @@
+<% pageTitle = 'Login - Learning Hub' %>
+<%- include('../partials/header') %>
+
+<main class="main-container">
+  <div class="auth-container" style="max-width: 450px; margin: 60px auto;">
+    <div class="auth-card" style="background: var(--bg-primary); border-radius: var(--border-radius-lg); padding: calc(var(--spacing-unit) * 6); box-shadow: var(--shadow-md);">
+      <h1 class="auth-title" style="font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: calc(var(--spacing-unit) * 4); color: var(--text-primary);">
+        Welcome Back
+      </h1>
+
+      <% if (error) { %>
+        <div class="alert alert-error" style="background: rgba(239, 68, 68, 0.1); color: var(--color-danger); padding: calc(var(--spacing-unit) * 2); border-radius: var(--border-radius-sm); margin-bottom: calc(var(--spacing-unit) * 3); border: 2px solid var(--color-danger);">
+          <%= error %>
+        </div>
+      <% } %>
+
+      <form method="POST" action="/auth/login" id="loginForm">
+        <input type="hidden" name="redirect" value="<%= typeof redirect !== 'undefined' ? redirect : '' %>">
+        <input type="hidden" name="migrateData" id="migrateData">
+
+        <div class="form-group" style="margin-bottom: calc(var(--spacing-unit) * 3);">
+          <label for="email" style="display: block; font-weight: 600; margin-bottom: calc(var(--spacing-unit) * 1); color: var(--text-primary);">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            style="width: 100%; padding: calc(var(--spacing-unit) * 2); font-size: 1rem; border: 2px solid var(--color-neutral-200); border-radius: var(--border-radius-sm); background: var(--bg-primary); color: var(--text-primary);"
+          >
+        </div>
+
+        <div class="form-group" style="margin-bottom: calc(var(--spacing-unit) * 4);">
+          <label for="password" style="display: block; font-weight: 600; margin-bottom: calc(var(--spacing-unit) * 1); color: var(--text-primary);">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            minlength="6"
+            style="width: 100%; padding: calc(var(--spacing-unit) * 2); font-size: 1rem; border: 2px solid var(--color-neutral-200); border-radius: var(--border-radius-sm); background: var(--bg-primary); color: var(--text-primary);"
+          >
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; background: var(--color-primary); color: white; border: none; padding: calc(var(--spacing-unit) * 2.5); border-radius: var(--border-radius-sm); font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all var(--transition-fast);">
+          Login
+        </button>
+      </form>
+
+      <div class="auth-footer" style="text-align: center; margin-top: calc(var(--spacing-unit) * 4); color: var(--text-secondary);">
+        Don't have an account?
+        <a href="/auth/register" style="color: var(--color-primary); font-weight: 600; text-decoration: none;">Register</a>
+      </div>
+
+      <div class="guest-option" style="text-align: center; margin-top: calc(var(--spacing-unit) * 3); padding-top: calc(var(--spacing-unit) * 3); border-top: 1px solid var(--color-neutral-200);">
+        <a href="/" style="color: var(--text-secondary); text-decoration: none; font-size: 0.95rem;">Continue as guest</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  // Migrate localStorage data on login
+  document.getElementById('loginForm').addEventListener('submit', function() {
+    try {
+      const completedLessons = localStorage.getItem('completedLessons');
+      if (completedLessons) {
+        document.getElementById('migrateData').value = completedLessons;
+      }
+    } catch (e) {
+      console.error('Failed to read localStorage:', e);
+    }
+  });
+</script>
+
+<%- include('../partials/footer') %>

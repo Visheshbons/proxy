@@ -1,8 +1,28 @@
 import express from "express";
 import path from "path";
-import fs from "fs/promises"; // promise-based fs API
+import fs from "fs/promises";
 import { fileURLToPath } from "url";
 import chalk from "chalk";
+import mongoose from "mongoose";
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import User from "./models/User.js";
+import { authenticate, requireAuth } from "./middleware/auth.js";
+import { setTimeout } from "timers/promises";
+
+// Load environment variables
+dotenv.config();
+
+// --- Centralized Credit & Economy Configuration ---
+const LESSON_UNLOCK_COST = 50; // Cost to unlock a single lesson
+const PROXY_ACCESS_REQUIREMENT = 1000; // Min credits to access proxy
+const DAILY_LOGIN_REWARD = 10; // Credits for logging in each day
+const LESSON_COMPLETION_REWARD = 25; // Base credits for completing a lesson
+const PERFECT_LESSON_BONUS = 50; // *Additional* credits for a perfect score
+// ---
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,9 +31,40 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Connect to MongoDB
+log("Connecting to MongoDB...", "info");
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => log("Connected to MongoDB", "success"))
+  .catch((err) => log(`MongoDB connection error: ${err.message}`, "error"));
+
+// Middleware
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Session configuration
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      touchAfter: 24 * 3600, // Lazy session update
+    }),
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    },
+  }),
+);
+
+// Authentication middleware
+app.use(authenticate);
 
 // Logging utility
 function log(msg, type = "info") {
@@ -73,7 +124,6 @@ async function getCourseStructure() {
           }
         }
       } catch (err) {
-        // Folder missing or no topics
         structure[subject][year] = [];
       }
     }
@@ -82,10 +132,270 @@ async function getCourseStructure() {
   return structure;
 }
 
-// Routes
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = !!req.user;
+  res.locals.user = req.user;
+  next();
+});
+
+// Auth Routes
+app.get("/auth/register", (req, res) => {
+  if (req.user) return res.redirect("/profile");
+  res.render("auth/register", { error: null });
+});
+
+app.post("/auth/register", async (req, res) => {
+  try {
+    const { username, email, password, confirmPassword } = req.body;
+
+    if (password !== confirmPassword) {
+      return res.render("auth/register", { error: "Passwords do not match" });
+    }
+
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    if (existingUser) {
+      return res.render("auth/register", {
+        error: "Username or email already exists",
+      });
+    }
+
+    const user = new User({ username, email, password });
+
+    // Migrate localStorage data if provided
+    if (req.body.migrateData) {
+      try {
+        const completedLessons = JSON.parse(req.body.migrateData);
+        user.completedLessons = completedLessons;
+      } catch (e) {
+        log("Failed to migrate localStorage data", "warning");
+      }
+    }
+
+    await user.save();
+
+    log(`New user registered: ${chalk.grey.italic(user.username)}`, "info");
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    req.session.token = token;
+    res.redirect("/profile");
+  } catch (error) {
+    log(`Registration error: ${error.message}`, "error");
+    res.render("auth/register", {
+      error: "Registration failed. Please try again.",
+    });
+  }
+});
+
+app.get("/auth/login", (req, res) => {
+  if (req.user) return res.redirect("/profile");
+  res.render("auth/login", { error: null, redirect: req.query.redirect });
+});
+
+app.post("/auth/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user || !(await user.comparePassword(password))) {
+      return res.render("auth/login", {
+        error: "Invalid email or password",
+        redirect: req.body.redirect,
+      });
+    }
+
+    // Check and award daily login credits
+    user.checkDailyLogin(DAILY_LOGIN_REWARD); // <-- UPDATED
+    user.lastLogin = new Date();
+
+    // Migrate localStorage data if provided
+    if (req.body.migrateData) {
+      try {
+        const completedLessons = JSON.parse(req.body.migrateData);
+        // Merge with existing completed lessons
+        const merged = [
+          ...new Set([...user.completedLessons, ...completedLessons]),
+        ];
+        user.completedLessons = merged;
+      } catch (e) {
+        log("Failed to migrate localStorage data", "warning");
+      }
+    }
+
+    await user.save();
+
+    log(`User ${chalk.grey.italic(user.username)} logged in`, "info");
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    req.session.token = token;
+
+    const redirectUrl = req.body.redirect || "/profile";
+    res.redirect(redirectUrl);
+  } catch (error) {
+    log(`Login error: ${error.message}`, "error");
+    res.render("auth/login", {
+      error: "Login failed. Please try again.",
+      redirect: req.body.redirect,
+    });
+  }
+});
+
+app.get("/auth/logout", (req, res) => {
+  req.session.destroy();
+  res.redirect("/");
+  log(`User ${chalk.grey.italic(user.username)} logged out`, "info");
+});
+
+// Profile Route
+app.get("/profile", requireAuth, async (req, res) => {
+  const structure = await getCourseStructure();
+  res.render("profile", {
+    user: req.user,
+    structure,
+  });
+});
+
+// API endpoint to get user progress
+app.get("/api/progress", authenticate, (req, res) => {
+  if (!req.user) {
+    return res.json({
+      completedLessons: [],
+      unlockedLessons: [],
+      theme: "light",
+    });
+  }
+  res.json({
+    completedLessons: req.user.completedLessons,
+    unlockedLessons: req.user.unlockedLessons || [], // Use || [] for safety
+    theme: req.user.preferences.theme,
+  });
+});
+
+// API endpoint to save lesson completion
+app.post("/api/lesson/complete", authenticate, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.json({ success: false, message: "Not authenticated" });
+    }
+
+    const { lessonId, isPerfect } = req.body;
+    let creditsEarned = 0;
+
+    if (!req.user.completedLessons.includes(lessonId)) {
+      req.user.completedLessons.push(lessonId);
+      // If it was purchased, remove from unlocked array
+      if (req.user.unlockedLessons) {
+        req.user.unlockedLessons = req.user.unlockedLessons.filter(
+          (id) => id !== lessonId,
+        );
+      }
+
+      // Award credits using the centralized constants
+      req.user.awardLessonCredits(
+        lessonId,
+        isPerfect,
+        LESSON_COMPLETION_REWARD,
+        PERFECT_LESSON_BONUS,
+      ); // <-- UPDATED
+
+      // Calculate earned credits for the response
+      creditsEarned = isPerfect
+        ? LESSON_COMPLETION_REWARD + PERFECT_LESSON_BONUS
+        : LESSON_COMPLETION_REWARD; // <-- UPDATED
+
+      await req.user.save();
+    }
+
+    res.json({
+      success: true,
+      credits: req.user.credits.total,
+      creditsEarned: creditsEarned, // <-- UPDATED
+    });
+  } catch (error) {
+    log(`Lesson completion error: ${error.message}`, "error");
+    res.json({ success: false, message: "Failed to save progress" });
+  }
+});
+
+// API endpoint to unlock a lesson with credits
+app.post("/api/lesson/unlock", requireAuth, async (req, res) => {
+  try {
+    const { lessonId } = req.body;
+
+    if (!lessonId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Lesson ID required" });
+    }
+
+    // Check if already owned
+    if (
+      req.user.completedLessons.includes(lessonId) ||
+      (req.user.unlockedLessons && req.user.unlockedLessons.includes(lessonId))
+    ) {
+      return res.json({ success: true, message: "Lesson already unlocked" });
+    }
+
+    // Check credits (using constant)
+    if (req.user.credits.total < LESSON_UNLOCK_COST) {
+      // <-- USES CONSTANT
+      return res
+        .status(402)
+        .json({ success: false, message: "Insufficient credits" });
+    }
+
+    // Deduct credits and unlock
+    req.user.credits.total -= LESSON_UNLOCK_COST;
+    req.user.credits.spent = (req.user.credits.spent || 0) + LESSON_UNLOCK_COST;
+
+    if (!req.user.unlockedLessons) {
+      // Initialize array if it doesn't exist
+      req.user.unlockedLessons = [];
+    }
+    req.user.unlockedLessons.push(lessonId);
+
+    await req.user.save();
+
+    res.json({
+      success: true,
+      lessonId,
+      newCreditTotal: req.user.credits.total,
+    });
+  } catch (error) {
+    log(`Lesson unlock error: ${error.message}`, "error");
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to unlock lesson" });
+  }
+});
+
+// API endpoint to update theme preference
+app.post("/api/preferences/theme", authenticate, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.json({ success: false });
+    }
+
+    const { theme } = req.body;
+    req.user.preferences.theme = theme;
+    await req.user.save();
+
+    res.json({ success: true });
+  } catch (error) {
+    log(`Theme update error: ${error.message}`, "error");
+    res.json({ success: false });
+  }
+});
+
+// Main Routes
 app.get("/", async (req, res) => {
   const structure = await getCourseStructure();
-  res.render("index", { structure });
+  res.render("index", { structure, user: req.user });
 });
 
 app.get("/subject/:subject", async (req, res) => {
@@ -96,7 +406,7 @@ app.get("/subject/:subject", async (req, res) => {
     return res.status(404).send("Subject not found");
   }
 
-  res.render("subject", { subject, years: structure[subject] });
+  res.render("subject", { subject, years: structure[subject], user: req.user });
 });
 
 app.get("/subject/:subject/year/:year", async (req, res) => {
@@ -111,13 +421,11 @@ app.get("/subject/:subject/year/:year", async (req, res) => {
     subject,
     year: parseInt(year),
     topics: structure[subject][year],
+    user: req.user,
   });
 });
 
 app.get("/subject/:subject/year/:year/topic/:topic", async (req, res) => {
-  // New "topic" page: choose a lesson within a topic.
-  // This route renders a lightweight HTML page (roadmap style) and uses localStorage
-  // on the client to decide which lessons are selectable (completed lessons + the next one).
   const { subject, year, topic } = req.params;
   const topicPath = path.join(
     __dirname,
@@ -131,7 +439,6 @@ app.get("/subject/:subject/year/:year/topic/:topic", async (req, res) => {
     const files = await fs.readdir(topicPath);
     const lessonFiles = files.filter((f) => f.endsWith(".json"));
 
-    // Sort lessons numerically by the lesson number in the filename (lesson1.json, lesson2.json, ...)
     lessonFiles.sort((a, b) => {
       const aNum = parseInt(
         (a.match(/lesson(\d+)\.json/i) || [null, "0"])[1],
@@ -151,176 +458,25 @@ app.get("/subject/:subject/year/:year/topic/:topic", async (req, res) => {
       })
       .filter(Boolean);
 
-    // Build a simple HTML page (inline CSS + JS) so we don't need to add a new EJS file.
     const pageTitle = `${subject} - Year ${year} - ${topic.replace(/_/g, " ")}`;
     const safeTopicLabel = topic.replace(/_/g, " ");
 
-    const html = `
-      <!doctype html>
-      <html lang="en">
-      <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <title>${pageTitle}</title>
-        <link rel="stylesheet" href="/css/style.css">
-        <style>
-          /* Roadmap inline styles (kept minimal so they blend with existing styles) */
-          .roadmap-wrap { max-width: 900px; margin: 30px auto; padding: 20px; background: var(--bg-primary, #fff); border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
-          .roadmap-header { display:flex; align-items:center; justify-content:space-between; margin-bottom: 18px; }
-          .roadmap-title { font-size:1.4rem; font-weight:700; color:var(--text-primary,#111); }
-          .roadmap-list { display:flex; flex-direction:column; gap:16px; padding:0; margin:0; list-style:none; }
-          .roadmap-step { display:flex; align-items:center; gap:16px; cursor:default; user-select:none; }
-          .roadmap-circle { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1rem; border:3px solid var(--color-neutral-200,#ddd); color:var(--text-primary,#111); background:var(--bg-secondary,#fafafa); transition:all .18s ease; flex:0 0 44px; }
-          .roadmap-step .label { flex:1; display:flex; align-items:center; justify-content:space-between; gap:12px; padding-right:8px; }
-          .roadmap-title-text { font-weight:600; }
-          .roadmap-meta { color:var(--color-muted,#666); font-size:0.95rem; }
-          .roadmap-connector { height:18px; width:2px; background:var(--color-neutral-200,#ddd); margin-left:21px; margin-top:-6px; margin-bottom:-6px; align-self:stretch; }
-          .roadmap-step.locked { opacity:0.45; }
-          .roadmap-step.locked .roadmap-circle { border-color:var(--color-neutral-200,#ddd); background:transparent; color:var(--color-muted,#999); }
-          .roadmap-step.unlocked { cursor:pointer; }
-          .roadmap-step.unlocked:hover .roadmap-circle { transform:scale(1.03); box-shadow:0 6px 18px rgba(0,0,0,0.06); }
-          .roadmap-step.completed .roadmap-circle { background: linear-gradient(135deg,#8ef7a1,#4cd964); color:#053; border-color: #4cd964; }
-          .roadmap-footer { margin-top:18px; display:flex; justify-content:flex-end; gap:8px; }
-          .btn-small { padding:8px 12px; border-radius:8px; border:0; background:var(--color-primary,#2b6cb0); color:#fff; cursor:pointer; font-weight:600; }
-          @media (max-width:640px){ .roadmap-wrap{margin:14px 12px;} }
-        </style>
-      </head>
-      <body>
-        <nav class="navbar">
-          <div class="nav-container">
-            <a href="/" class="nav-logo">Learning Hub</a>
-            <div class="nav-links">
-              <a href="/subject/${encodeURIComponent(subject)}" class="nav-link">${subject}</a>
-            </div>
-          </div>
-        </nav>
-
-        <main class="main-container">
-          <div class="breadcrumb">
-            <a href="/">Home</a> / <a href="/subject/${encodeURIComponent(subject)}">${subject}</a> / <a href="/subject/${encodeURIComponent(subject)}/year/${year}">Year ${year}</a> / <span>${safeTopicLabel}</span>
-          </div>
-
-          <div class="roadmap-wrap">
-            <div class="roadmap-header">
-              <div>
-                <div class="roadmap-title">${safeTopicLabel}</div>
-                <div class="roadmap-meta">${lessons.length} lesson${lessons.length !== 1 ? "s" : ""} available</div>
-              </div>
-              <div>
-                <a href="/subject/${encodeURIComponent(subject)}/year/${year}" class="btn btn-secondary">Back to Topics</a>
-              </div>
-            </div>
-
-            <ul class="roadmap-list" id="roadmapList">
-              ${lessons
-                .map(
-                  (num, idx) => `
-                <li class="roadmap-step" data-lesson="${num}" data-index="${idx}">
-                  <div class="roadmap-circle">${num}</div>
-                  <div class="label">
-                    <div class="roadmap-title-text">Lesson ${num}</div>
-                    <div class="roadmap-meta" id="meta-${num}">Loading…</div>
-                  </div>
-                </li>
-                ${idx < lessons.length - 1 ? '<div class="roadmap-connector"></div>' : ""}
-              `,
-                )
-                .join("")}
-            </ul>
-
-            <div class="roadmap-footer">
-              <button class="btn-small" id="resetProgress">Reset Progress</button>
-            </div>
-          </div>
-        </main>
-
-        <footer class="footer">
-          <div class="footer-container">
-            <p>&copy; 2025 Learning Hub. Empowering students from Year 1 to Year 13.</p>
-          </div>
-        </footer>
-
-        <script>
-          (function(){
-            const subject = ${JSON.stringify(subject)};
-            const year = ${JSON.stringify(year)};
-            const topic = ${JSON.stringify(topic)};
-            const lessonIds = ${JSON.stringify(lessons)};
-            const listEl = document.getElementById('roadmapList');
-            const key = 'completedLessons'; // stores array of "subject|year|topic|lesson"
-            function readCompleted() {
-              try {
-                return JSON.parse(localStorage.getItem(key) || '[]');
-              } catch (e) {
-                return [];
-              }
-            }
-            function isCompleted(id) {
-              return readCompleted().includes(id);
-            }
-            function lessonIdFor(n) {
-              return [subject, year, topic, n].join('|');
-            }
-
-            // Determine the highest completed lesson index for this topic
-            const completedSet = new Set(readCompleted().filter(s => s.startsWith(subject + '|' + year + '|' + topic + '|')));
-            const completedNumbers = Array.from(completedSet).map(s => parseInt(s.split('|').pop(), 10)).filter(Boolean).sort((a,b)=>a-b);
-            const maxCompleted = completedNumbers.length ? Math.max(...completedNumbers) : 0;
-
-            // Allowed lessons: all completed AND the next one after the highest completed
-            const allowed = new Set(completedNumbers);
-            if (lessonIds.length > 0) {
-              const next = maxCompleted + 1;
-              if (lessonIds.includes(next)) allowed.add(next);
-              // Also allow lesson 1 if nothing completed
-              if (maxCompleted === 0 && lessonIds.includes(1)) allowed.add(1);
-            }
-
-            // Render state
-            lessonIds.forEach(n => {
-              const li = listEl.querySelector('[data-lesson=\"' + n + '\"]');
-              if (!li) return;
-              const circle = li.querySelector('.roadmap-circle');
-              const meta = li.querySelector('.roadmap-meta');
-              const id = lessonIdFor(n);
-
-              if (completedSet.has(id)) {
-                li.classList.add('completed');
-                meta.textContent = 'Completed';
-              } else if (allowed.has(n)) {
-                li.classList.add('unlocked');
-                meta.textContent = 'Unlocked';
-                li.addEventListener('click', () => {
-                  location.href = '/lesson/' + encodeURIComponent(subject) + '/' + encodeURIComponent(year) + '/' + encodeURIComponent(topic) + '/' + encodeURIComponent(n);
-                });
-              } else {
-                li.classList.add('locked');
-                meta.textContent = 'Locked';
-              }
-            });
-
-            document.getElementById('resetProgress').addEventListener('click', () => {
-              if (!confirm('Clear completed lessons for ALL topics?')) return;
-              localStorage.removeItem(key);
-              // Reload to reflect new state
-              location.reload();
-            });
-
-          })();
-        </script>
-      </body>
-      </html>
-    `;
-
-    res.send(html);
+    res.render("topic", {
+      subject,
+      year,
+      topic,
+      topicSlug: topic,
+      topicName: safeTopicLabel,
+      lessons,
+      lessonCount: lessons.length,
+      user: req.user,
+    });
   } catch (err) {
     res.status(404).send("Topic not found");
   }
 });
 
 app.get("/lesson/:subject/:year/:topic/:lesson", async (req, res) => {
-  // Render the regular lesson EJS template, but inject a small client-side script
-  // that marks the lesson complete in localStorage when the lesson completion UI is shown.
   const { subject, year, topic, lesson } = req.params;
   const lessonPath = path.join(
     __dirname,
@@ -335,98 +491,87 @@ app.get("/lesson/:subject/:year/:topic/:lesson", async (req, res) => {
     const lessonData = await fs.readFile(lessonPath, "utf-8");
     const lessonContent = JSON.parse(lessonData);
 
-    // Render via Express but capture the HTML so we can append a script to mark completion
-    res.render(
-      "lesson",
-      {
-        lesson: lessonContent,
-        subject,
-        year,
-        topic,
-        lessonNumber: lesson,
-      },
-      (err, html) => {
-        if (err) {
-          // If something goes wrong falling back to a simple error
-          return res.status(500).send("Rendering error");
-        }
-
-        // Client-side script to mark this lesson as completed in localStorage when completion UI appears.
-        const completionScript = `
-<script>
-  (function() {
-    const subject = ${JSON.stringify(subject)};
-    const year = ${JSON.stringify(year)};
-    const topic = ${JSON.stringify(topic)};
-    const lessonNum = ${JSON.stringify(lesson)};
-    const key = 'completedLessons';
-
-    function lessonId() {
-      return [subject, year, topic, lessonNum].join('|');
-    }
-
-    function markCompleted() {
-      try {
-        const raw = localStorage.getItem(key);
-        const arr = raw ? JSON.parse(raw) : [];
-        const id = lessonId();
-        if (!arr.includes(id)) {
-          arr.push(id);
-          localStorage.setItem(key, JSON.stringify(arr));
-          // Optionally dispatch an event so other pages (if open) can react
-          window.dispatchEvent(new CustomEvent('lessonCompleted', { detail: { id } }));
-        }
-      } catch (e) {
-        // ignore localStorage errors
-      }
-    }
-
-    // Detect when the completion container becomes visible.
-    document.addEventListener('DOMContentLoaded', function() {
-      const completionEl = document.getElementById('completionContainer');
-
-      if (!completionEl) return;
-
-      // If it's already visible at load time, mark as complete
-      if (window.getComputedStyle(completionEl).display !== 'none') {
-        markCompleted();
-        return;
-      }
-
-      // Observe for style changes (the lesson code toggles display)
-      const observer = new MutationObserver(function(mutations) {
-        const display = window.getComputedStyle(completionEl).display;
-        if (display !== 'none') {
-          markCompleted();
-          observer.disconnect();
-        }
-      });
-
-      observer.observe(completionEl, { attributes: true, attributeFilter: ['style'] });
-
-      // As a fallback, poll occasionally
-      const poll = setInterval(function() {
-        if (window.getComputedStyle(completionEl).display !== 'none') {
-          markCompleted();
-          clearInterval(poll);
-        }
-      }, 400);
+    res.render("lesson", {
+      lesson: lessonContent,
+      subject,
+      year,
+      topic,
+      lessonNumber: lesson,
+      user: req.user,
     });
-  })();
-</script>
-      `;
-
-        // Append the script to the rendered HTML and send it. Since some templates may not
-        // include closing </body>, we simply append the script at the end of the HTML.
-        html = html + completionScript;
-        res.send(html);
-      },
-    );
   } catch (err) {
-    res.status(404).send("Lesson not found");
+    res.status(4404).send("Lesson not found");
   }
 });
 
-app.listen(PORT, "0.0.0.0", () => {
+// Middleware to check if user has at least 1,000 credits
+function require1KCredits(req, res, next) {
+  if (!req.user) {
+    return res.redirect("/auth/login?redirect=/proxy");
+  }
+
+  // Use the constant
+  if (req.user.credits.total < PROXY_ACCESS_REQUIREMENT) {
+    // <-- UPDATED
+    log(
+      `User ${chalk.grey.italic(req.user.username)} tried to access proxy without credits`,
+      "warning",
+    );
+    return res.status(403).render("error", {
+      // Use the constant
+      message: `You need at least ${PROXY_ACCESS_REQUIREMENT.toLocaleString()} credits to access this feature.`, // <-- UPDATED
+      user: req.user,
+    });
+  }
+
+  next();
+}
+
+app.get("/proxy", requireAuth, require1KCredits, (req, res) => {
+  res.status(303).send(`
+      <center><pre>
+        Work In Progress<br>
+        Indev Beta accessable at <a href="/proxy/beta">/proxy/beta</a>
+      </pre></center>
+    `);
+  log(
+    `User ${chalk.grey.italic(req.user.username)} tried to access ${chalk.grey.italic("/proxy")}`,
+    "warning",
+  );
+});
+
+app.listen(PORT, "0.0.0.0", async () => {
   log(`Server running on port ${chalk.green(PORT)}`, "success");
+  await setTimeout(10000);
+
+  //newline
+  console.log();
+
+  log("--- Credit & Economy Settings ---", "info");
+  log(
+    `Daily Login Reward:         ${chalk.green(DAILY_LOGIN_REWARD)} credits`,
+    "info",
+  );
+  log(
+    `Lesson Completion Reward:   ${chalk.green(LESSON_COMPLETION_REWARD)} credits`,
+    "info",
+  );
+  log(
+    `Perfect Lesson Bonus:       ${chalk.green(PERFECT_LESSON_BONUS)} credits (Total: ${
+      LESSON_COMPLETION_REWARD + PERFECT_LESSON_BONUS
+    })`,
+    "info",
+  );
+  log(
+    `Lesson Unlock Cost:         ${chalk.yellow(LESSON_UNLOCK_COST)} credits`,
+    "info",
+  );
+  log(
+    `Proxy Access Requirement:   ${chalk.yellow(
+      PROXY_ACCESS_REQUIREMENT,
+    )} credits`,
+    "info",
+  );
+  // newline
+  console.log();
 });

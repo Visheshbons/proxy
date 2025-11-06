@@ -12,6 +12,20 @@
       <a href="/" class="nav-logo">Learning Hub</a>
       <div class="nav-links">
         <a href="/" class="nav-link">Home</a>
+        <% if (typeof user !== 'undefined' && user) { %>
+          <a href="/profile" class="nav-link">
+            <span style="display: inline-flex; align-items: center; gap: 8px;">
+              👤 <%= user.username %>
+              <span style="background: var(--color-primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">
+                <%= user.credits.total %>💰
+              </span>
+            </span>
+          </a>
+          <a href="/auth/logout" class="nav-link" style="color: var(--color-danger);">Logout</a>
+        <% } else { %>
+          <a href="/auth/login" class="nav-link">Login</a>
+          <a href="/auth/register" class="nav-link" style="background: var(--color-primary); color: white; padding: 8px 16px; border-radius: var(--border-radius-sm);">Sign Up</a>
+        <% } %>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <span id="themeIcon">🌙</span>
         </button>
@@ -20,22 +34,67 @@
   </nav>
 
   <script>
-    // Theme toggle functionality
+    // Theme toggle functionality with user account sync
     const themeToggle = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
     const html = document.documentElement;
+    const isAuthenticated = <%= typeof user !== 'undefined' && user ? 'true' : 'false' %>;
 
-    // Check for saved theme preference or default to 'light'
-    const currentTheme = localStorage.getItem('theme') || 'light';
-    html.setAttribute('data-theme', currentTheme);
-    themeIcon.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+    // Function to apply theme
+    function applyTheme(theme) {
+      html.setAttribute('data-theme', theme);
+      themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
 
+      // Save to localStorage for non-authenticated users
+      if (!isAuthenticated) {
+        localStorage.setItem('theme', theme);
+      }
+    }
+
+    // Function to sync theme with server (for authenticated users)
+    async function syncThemeWithServer(theme) {
+      if (!isAuthenticated) return;
+
+      try {
+        await fetch('/api/preferences/theme', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ theme })
+        });
+      } catch (error) {
+        console.error('Failed to sync theme:', error);
+      }
+    }
+
+    // Load theme from user account or localStorage
+    async function loadTheme() {
+      if (isAuthenticated) {
+        try {
+          const response = await fetch('/api/progress');
+          const data = await response.json();
+          applyTheme(data.theme || 'light');
+        } catch (error) {
+          console.error('Failed to load theme from server:', error);
+          const localTheme = localStorage.getItem('theme') || 'light';
+          applyTheme(localTheme);
+        }
+      } else {
+        const localTheme = localStorage.getItem('theme') || 'light';
+        applyTheme(localTheme);
+      }
+    }
+
+    // Initialize theme
+    loadTheme();
+
+    // Theme toggle click handler
     themeToggle.addEventListener('click', () => {
       const currentTheme = html.getAttribute('data-theme');
       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
-      html.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+      applyTheme(newTheme);
+      syncThemeWithServer(newTheme);
     });
   </script>

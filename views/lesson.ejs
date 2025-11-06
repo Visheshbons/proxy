@@ -6,7 +6,8 @@
     <a href="/">Home</a> /
     <a href="/subject/<%= subject %>"><%= subject %></a> /
     <a href="/subject/<%= subject %>/year/<%= year %>">Year <%= year %></a> /
-    <span><%= lesson.topic %></span>
+    <a href="/subject/<%= subject %>/year/<%= year %>/topic/<%= topic %>"><%= lesson.topic %></a> /
+    <span>Lesson <%= lessonNumber %></span>
   </div>
 
   <article class="lesson-container">
@@ -32,8 +33,14 @@
       <div class="completion-message">
         <div class="completion-icon">🎉</div>
         <h2 class="completion-title">Lesson Complete!</h2>
-        <p class="completion-text">Great job! You've successfully completed this lesson.</p>
-        <a href="/subject/<%= subject %>/year/<%= year %>" class="btn btn-secondary">Back to Topics</a>
+        <p class="completion-text" id="completionText">Great job! You've successfully completed this lesson.</p>
+        <div id="creditsEarned" style="display: none; margin: 20px 0; padding: 20px; background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%); border-radius: 12px;">
+          <div style="font-size: 2rem; margin-bottom: 10px;">💰</div>
+          <div style="font-size: 1.2rem; font-weight: 600; color: var(--color-primary);">
+            You earned <span id="creditsAmount"></span> credits!
+          </div>
+        </div>
+        <a href="/subject/<%= subject %>/year/<%= year %>/topic/<%= topic %>" class="btn btn-secondary">Back to Lessons</a>
       </div>
     </div>
 
@@ -50,6 +57,15 @@
 <script>
   // Lesson data
   const lessonData = <%- JSON.stringify(lesson) %>;
+  if (typeof isAuthenticated === "undefined") {
+    const isAuthenticated = <%- JSON.stringify(isAuthenticated) %>;
+  }
+  const subject = <%- JSON.stringify(subject) %>;
+  const year = <%- JSON.stringify(year) %>;
+  const topic = <%- JSON.stringify(topic) %>;
+  const lessonNum = <%- JSON.stringify(lessonNumber) %>;
+
+  console.log('Lesson Data:', lessonData);
 
   // State management
   let currentSectionIndex = 0;
@@ -57,15 +73,24 @@
   let lives = 2;
   let userAnswer = '';
   let answeredCorrectly = false;
+  let livesLost = 0;
 
   // Initialize lesson
   function init() {
+    console.log('Initializing lesson...');
+    if (!lessonData || !lessonData.content || lessonData.content.length === 0) {
+      console.error('No lesson content found!');
+      document.getElementById('lessonContent').innerHTML = '<p>Error: Lesson content not found.</p>';
+      return;
+    }
     showCurrentSection();
   }
 
   function showCurrentSection() {
     const content = lessonData.content[currentSectionIndex];
     const container = document.getElementById('lessonContent');
+
+    console.log('Current section:', currentSectionIndex, content);
 
     if (!content) {
       showCompletion();
@@ -100,9 +125,9 @@
     } else if (section.type === 'example') {
       html += `
         <div class="section-icon">✏️</div>
-        <h3 class="section-heading">${section.heading}</h3>
+        ${section.heading ? `<h3 class="section-heading">${section.heading}</h3>` : ''}
         ${section.problem ? `<div class="example-problem"><strong>Problem:</strong> ${section.problem}</div>` : ''}
-        ${section.solution ? `
+        ${section.solution && section.solution.length > 0 ? `
           <div class="example-solution">
             <strong>Solution:</strong>
             <ol>
@@ -114,30 +139,27 @@
     } else if (section.type === 'practice') {
       html += `
         <div class="section-icon">✍️</div>
-        <h3 class="section-heading">${section.heading}</h3>
+        ${section.heading ? `<h3 class="section-heading">${section.heading}</h3>` : ''}
       `;
 
-      // Check if problems exist and if this is the question-answer format
-      if (section.problems && section.problems.length > 0) {
-        if (Array.isArray(section.problems[0])) {
-          // New format: questions with answers
-          html += '</div>'; // Close content bubble
-          html += renderPracticeQuestion(section.problems[currentQuestionIndex]);
-          return html;
-        } else {
-          // Old format: just a list of problems
-          html += `
-            <ul class="practice-list">
-              ${section.problems.map(problem => `<li>${problem}</li>`).join('')}
-            </ul>
-          `;
-        }
+      if (section.problems && section.problems.length > 0 && Array.isArray(section.problems[0])) {
+        // New format: questions with answers
+        html += '</div>'; // Close content bubble
+        html += renderPracticeQuestion(section.problems[currentQuestionIndex]);
+        return html;
+      } else if (section.problems && section.problems.length > 0) {
+        // Old format: just a list of problems
+        html += `
+          <ul class="practice-list" style="margin-top: 15px; padding-left: 25px;">
+            ${section.problems.map(problem => `<li style="margin-bottom: 10px;">${problem}</li>`).join('')}
+          </ul>
+        `;
       }
     }
 
     html += '</div>';
 
-    // Add continue button for non-practice sections or old format practice
+    // Add continue button
     html += `
       <button class="next-button" onclick="nextSection()">
         ${currentSectionIndex === lessonData.content.length - 1 ? 'Complete Lesson' : 'Continue'}
@@ -148,6 +170,11 @@
   }
 
   function renderPracticeQuestion(questionData) {
+    if (!questionData || questionData.length < 2) {
+      console.error('Invalid question data:', questionData);
+      return '<p>Error loading question</p>';
+    }
+
     const [question, correctAnswer] = questionData;
 
     return `
@@ -176,6 +203,11 @@
     }
 
     const section = lessonData.content[currentSectionIndex];
+    if (!section.problems || !section.problems[currentQuestionIndex]) {
+      console.error('No question found at index:', currentQuestionIndex);
+      return;
+    }
+
     const [question, correctAnswer] = section.problems[currentQuestionIndex];
     const userInput = document.getElementById('answerInput').value.trim();
 
@@ -188,11 +220,9 @@
     const input = document.getElementById('answerInput');
     const submitBtn = document.getElementById('submitBtn');
 
-    // Convert both to strings and compare (handles both string and number answers)
-    const isCorrect = userInput.toLowerCase() === String(correctAnswer).toLowerCase();
-
-    // Disable input
     input.disabled = true;
+
+    const isCorrect = userInput.toLowerCase() === String(correctAnswer).toLowerCase();
 
     if (isCorrect) {
       feedback.className = 'question-feedback correct';
@@ -201,7 +231,6 @@
       input.style.borderColor = 'var(--color-success)';
       answeredCorrectly = true;
 
-      // Check if there are more questions
       if (currentQuestionIndex < section.problems.length - 1) {
         submitBtn.textContent = 'Next Question';
       } else {
@@ -214,15 +243,14 @@
       feedback.style.display = 'block';
       input.style.borderColor = 'var(--color-danger)';
 
-      // Lose a life
       lives--;
+      livesLost++;
       updateLivesDisplay();
 
       if (lives <= 0) {
         showRestart();
       } else {
         answeredCorrectly = true;
-        // Check if there are more questions
         if (currentQuestionIndex < section.problems.length - 1) {
           submitBtn.textContent = 'Next Question';
         } else {
@@ -239,11 +267,9 @@
     answeredCorrectly = false;
 
     if (currentQuestionIndex >= section.problems.length) {
-      // Finished all questions in this section
       currentQuestionIndex = 0;
       nextSection();
     } else {
-      // Show next question
       showCurrentSection();
     }
   }
@@ -271,9 +297,53 @@
     });
   }
 
-  function showCompletion() {
+  async function showCompletion() {
     document.getElementById('lessonContent').style.display = 'none';
     document.getElementById('completionContainer').style.display = 'block';
+
+    const lessonId = [subject, year, topic, lessonNum].join('|');
+    const isPerfect = livesLost === 0;
+
+    // Save to database if authenticated, otherwise to localStorage
+    if (isAuthenticated) {
+      try {
+        const response = await fetch('/api/lesson/complete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ lessonId, isPerfect })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          const creditsDiv = document.getElementById('creditsEarned');
+          const creditsAmount = document.getElementById('creditsAmount');
+          creditsAmount.textContent = data.creditsEarned;
+          creditsDiv.style.display = 'block';
+
+          if (isPerfect) {
+            document.getElementById('completionText').textContent =
+              '🌟 Perfect! You completed this lesson without losing any lives!';
+          }
+        }
+      } catch (error) {
+        console.error('Failed to save progress:', error);
+      }
+    } else {
+      // Save to localStorage for guest users
+      try {
+        const key = 'completedLessons';
+        const raw = localStorage.getItem(key);
+        const arr = raw ? JSON.parse(raw) : [];
+        if (!arr.includes(lessonId)) {
+          arr.push(lessonId);
+          localStorage.setItem(key, JSON.stringify(arr));
+        }
+      } catch (e) {
+        console.error('Failed to save to localStorage:', e);
+      }
+    }
   }
 
   function showRestart() {
@@ -285,12 +355,13 @@
     currentSectionIndex = 0;
     currentQuestionIndex = 0;
     lives = 2;
+    livesLost = 0;
     answeredCorrectly = false;
 
     document.getElementById('lessonContent').style.display = 'block';
     document.getElementById('restartContainer').style.display = 'none';
+    document.getElementById('completionContainer').style.display = 'none';
 
-    // Reset lives display
     const icons = document.querySelectorAll('.life-icon');
     icons.forEach(icon => icon.classList.remove('life-lost'));
 

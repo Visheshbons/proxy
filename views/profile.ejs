@@ -1,0 +1,98 @@
+<% pageTitle = 'My Profile - Learning Hub' %>
+<%- include('partials/header') %>
+
+<main class="main-container">
+  <div class="hero-section">
+    <h1 class="hero-title">Welcome, <%= user.username %>!</h1>
+    <p class="hero-subtitle">Track your progress and achievements</p>
+  </div>
+
+  <div class="profile-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: calc(var(--spacing-unit) * 4); margin-bottom: calc(var(--spacing-unit) * 4);">
+    <!-- Credits Card -->
+    <div class="stat-card" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%); border-radius: var(--border-radius-lg); padding: calc(var(--spacing-unit) * 4); box-shadow: var(--shadow-md); border-left: 4px solid var(--color-primary);">
+      <div style="font-size: 2.5rem; margin-bottom: calc(var(--spacing-unit) * 2);">💰</div>
+      <h3 style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: calc(var(--spacing-unit) * 1);">Total Credits</h3>
+      <p style="font-size: 3rem; font-weight: 700; color: var(--color-primary);"><%= user.credits.total %></p>
+    </div>
+
+    <!-- Completed Lessons Card -->
+    <div class="stat-card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%); border-radius: var(--border-radius-lg); padding: calc(var(--spacing-unit) * 4); box-shadow: var(--shadow-md); border-left: 4px solid var(--color-success);">
+      <div style="font-size: 2.5rem; margin-bottom: calc(var(--spacing-unit) * 2);">✅</div>
+      <h3 style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: calc(var(--spacing-unit) * 1);">Lessons Completed</h3>
+      <p style="font-size: 3rem; font-weight: 700; color: var(--color-success);"><%= user.completedLessons.length %></p>
+    </div>
+
+    <!-- Login Streak Card -->
+    <div class="stat-card" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%); border-radius: var(--border-radius-lg); padding: calc(var(--spacing-unit) * 4); box-shadow: var(--shadow-md); border-left: 4px solid var(--color-warning);">
+      <div style="font-size: 2.5rem; margin-bottom: calc(var(--spacing-unit) * 2);">🔥</div>
+      <h3 style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: calc(var(--spacing-unit) * 1);">Login Streak</h3>
+      <p style="font-size: 3rem; font-weight: 700; color: var(--color-warning);"><%= user.credits.dailyLoginStreak.length %></p>
+    </div>
+
+    <!-- Perfect Lessons Card -->
+    <div class="stat-card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%); border-radius: var(--border-radius-lg); padding: calc(var(--spacing-unit) * 4); box-shadow: var(--shadow-md); border-left: 4px solid var(--color-secondary);">
+      <div style="font-size: 2.5rem; margin-bottom: calc(var(--spacing-unit) * 2);">⭐</div>
+      <h3 style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: calc(var(--spacing-unit) * 1);">Perfect Lessons</h3>
+      <p style="font-size: 3rem; font-weight: 700; color: var(--color-secondary);"><%= user.credits.perfectLessonStreak.length %></p>
+    </div>
+  </div>
+
+  <!-- Credits Info -->
+  <div style="background: var(--bg-primary); border-radius: var(--border-radius-lg); padding: calc(var(--spacing-unit) * 4); box-shadow: var(--shadow-md); margin-bottom: calc(var(--spacing-unit) * 4);">
+    <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: calc(var(--spacing-unit) * 3); color: var(--text-primary);">How to Earn Credits</h2>
+    <div style="display: grid; gap: calc(var(--spacing-unit) * 2);">
+      <div style="display: flex; align-items: center; gap: calc(var(--spacing-unit) * 2); padding: calc(var(--spacing-unit) * 2); background: var(--color-neutral-50); border-radius: var(--border-radius-sm);">
+        <div style="font-size: 2rem;">🎯</div>
+        <div>
+          <div style="font-weight: 600; color: var(--text-primary);">Daily Login</div>
+          <div style="color: var(--text-secondary); font-size: 0.9rem;">+10 credits per day</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: calc(var(--spacing-unit) * 2); padding: calc(var(--spacing-unit) * 2); background: var(--color-neutral-50); border-radius: var(--border-radius-sm);">
+        <div style="font-size: 2rem;">📚</div>
+        <div>
+          <div style="font-weight: 600; color: var(--text-primary);">Complete a Lesson</div>
+          <div style="color: var(--text-secondary); font-size: 0.9rem;">+25 credits</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: calc(var(--spacing-unit) * 2); padding: calc(var(--spacing-unit) * 2); background: var(--color-neutral-50); border-radius: var(--border-radius-sm);">
+        <div style="font-size: 2rem;">💎</div>
+        <div>
+          <div style="font-weight: 600; color: var(--text-primary);">Perfect Lesson (No Lives Lost)</div>
+          <div style="color: var(--text-secondary); font-size: 0.9rem;">+75 credits (25 + 50 bonus)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Info -->
+  <div style="background: var(--bg-primary); border-radius: var(--border-radius-lg); padding: calc(var(--spacing-unit) * 4); box-shadow: var(--shadow-md); margin-bottom: calc(var(--spacing-unit) * 4);">
+    <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: calc(var(--spacing-unit) * 3); color: var(--text-primary);">Account Information</h2>
+    <div style="display: grid; gap: calc(var(--spacing-unit) * 2);">
+      <div>
+        <span style="color: var(--text-secondary);">Username:</span>
+        <strong style="margin-left: calc(var(--spacing-unit) * 1); color: var(--text-primary);"><%= user.username %></strong>
+      </div>
+      <div>
+        <span style="color: var(--text-secondary);">Email:</span>
+        <strong style="margin-left: calc(var(--spacing-unit) * 1); color: var(--text-primary);"><%= user.email %></strong>
+      </div>
+      <div>
+        <span style="color: var(--text-secondary);">Member Since:</span>
+        <strong style="margin-left: calc(var(--spacing-unit) * 1); color: var(--text-primary);"><%= new Date(user.createdAt).toLocaleDateString() %></strong>
+      </div>
+      <div>
+        <span style="color: var(--text-secondary);">Last Login:</span>
+        <strong style="margin-left: calc(var(--spacing-unit) * 1); color: var(--text-primary);"><%= new Date(user.lastLogin).toLocaleDateString() %></strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div style="display: flex; gap: calc(var(--spacing-unit) * 2); justify-content: center; flex-wrap: wrap;">
+    <a href="/" class="btn btn-secondary">Continue Learning</a>
+    <a href="/auth/logout" class="btn" style="background: var(--color-danger); color: white;">Logout</a>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

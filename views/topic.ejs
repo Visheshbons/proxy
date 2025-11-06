@@ -37,10 +37,24 @@
       <% } %>
     </ul>
 
-    <div class="roadmap-footer" style="margin-top:18px;display:flex;justify-content:flex-end;gap:8px;">
-      <button class="btn-small" id="resetProgress" style="padding:8px 12px;border-radius:8px;border:0;background:var(--color-primary,#2b6cb0);color:#fff;cursor:pointer;font-weight:600;">Reset Progress</button>
-    </div>
+    <% if (typeof user === 'undefined' || !user) { %>
+      <div class="roadmap-footer" style="margin-top:18px;display:flex;justify-content:flex-end;gap:8px;">
+        <button class="btn-small" id="resetProgress" style="padding:8px 12px;border-radius:8px;border:0;background:var(--color-primary,#2b6cb0);color:#fff;cursor:pointer;font-weight:600;">Reset Progress</button>
+      </div>
+    <% } %>
   </div>
+
+  <% if (typeof user === 'undefined' || !user) { %>
+    <div style="max-width:1000px;margin:20px auto;padding:20px;background:linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);border-radius:12px;text-align:center;">
+      <div style="font-size:1.5rem;margin-bottom:10px;">💡</div>
+      <div style="font-weight:600;margin-bottom:8px;color:var(--text-primary);">Want to track your progress and earn credits?</div>
+      <div style="margin-bottom:16px;color:var(--text-secondary);">Create an account to save your progress across devices and earn rewards!</div>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <a href="/auth/register" class="btn" style="background:var(--color-primary);color:white;text-decoration:none;padding:10px 20px;border-radius:8px;">Sign Up</a>
+        <a href="/auth/login" class="btn btn-secondary" style="text-decoration:none;">Login</a>
+      </div>
+    </div>
+  <% } %>
 </main>
 
 <script>
@@ -49,91 +63,79 @@
     const year = <%- JSON.stringify(year) %>;
     const topic = <%- JSON.stringify(topicSlug) %>;
     const lessonCount = <%- JSON.stringify(lessonCount) %>;
-    const key = 'completedLessons'; // localStorage key
-
-    function readCompleted() {
-      try {
-        return JSON.parse(localStorage.getItem(key) || '[]');
-      } catch (e) {
-        return [];
-      }
-    }
+    const isAuthenticated = <%= typeof user !== 'undefined' && user ? 'true' : 'false' %>;
+    const userCredits = <%= (typeof user !== 'undefined' && user) ? user.credits.total : 0 %>;
+    const LESSON_UNLOCK_COST = 50; // Must match server
 
     function lessonIdFor(n) {
       return [subject, year, topic, n].join('|');
     }
 
-    // Gather completed lessons for this subject/year/topic
-    const completedAll = readCompleted();
-    const completedForThis = completedAll.filter(s => s.startsWith(subject + '|' + year + '|' + topic + '|'));
-    const completedNumbers = completedForThis.map(s => parseInt(s.split('|').pop(), 10)).filter(Boolean).sort((a,b)=>a-b);
-    const maxCompleted = completedNumbers.length ? Math.max(...completedNumbers) : 0;
+    async function loadProgress() {
+      let completedForThis = [];
+      let userUnlocked = [];
 
-    // Allowed set: all completed plus the next one after maxCompleted. Also allow lesson 1 if nothing completed.
-    const allowed = new Set(completedNumbers);
-    if (lessonCount > 0) {
-      const next = maxCompleted + 1;
-      if (next <= lessonCount) allowed.add(next);
-      if (maxCompleted === 0) allowed.add(1);
-    }
-
-    // Render each list item
-    for (let n = 1; n <= lessonCount; n++) {
-      const li = document.querySelector('[data-lesson="' + n + '"]');
-      if (!li) continue;
-      const meta = document.getElementById('meta-' + n);
-      const id = lessonIdFor(n);
-
-      if (completedForThis.includes(id)) {
-        li.classList.add('completed');
-        if (meta) meta.textContent = 'Completed';
-        const circle = li.querySelector('.roadmap-circle');
-        if (circle) {
-          circle.style.background = 'linear-gradient(135deg,#8ef7a1,#4cd964)';
-          circle.style.color = '#053';
-          circle.style.borderColor = '#4cd964';
+      if (isAuthenticated) {
+        try {
+          const response = await fetch('/api/progress');
+          const data = await response.json();
+          completedForThis = data.completedLessons.filter(s =>
+            s.startsWith(subject + '|' + year + '|' + topic + '|')
+          );
+          userUnlocked = data.unlockedLessons || []; // Get unlocked lessons
+        } catch (error) {
+          console.error('Failed to load progress:', error);
         }
-      } else if (allowed.has(n)) {
-        li.classList.add('unlocked');
-        if (meta) meta.textContent = 'Unlocked';
-        li.style.cursor = 'pointer';
-        li.addEventListener('click', () => {
-          // navigate to lesson page
-          const url = '/lesson/' + encodeURIComponent(subject) + '/' + encodeURIComponent(year) + '/' + encodeURIComponent(topic) + '/' + encodeURIComponent(n);
-          location.href = url;
-        });
       } else {
-        li.classList.add('locked');
-        if (meta) meta.textContent = 'Locked';
-        li.style.opacity = '0.45';
+        try {
+          const key = 'completedLessons';
+          const raw = localStorage.getItem(key);
+          const arr = raw ? JSON.parse(raw) : [];
+          completedForThis = arr.filter(s =>
+            s.startsWith(subject + '|' + year + '|' + topic + '|')
+          );
+        } catch (e) {
+          completedForThis = [];
+        }
       }
-    }
 
-    document.getElementById('resetProgress').addEventListener('click', () => {
-      if (!confirm('Clear all completed lessons stored in localStorage?')) return;
-      localStorage.removeItem(key);
-      location.reload();
-    });
+      const completedNumbers = completedForThis
+        .map(s => parseInt(s.split('|').pop(), 10))
+        .filter(Boolean)
+        .sort((a,b)=>a-b);
 
-    // Listen for cross-tab / in-page events to update UI if a lesson is completed elsewhere
-    window.addEventListener('storage', (ev) => {
-      if (ev.key === key) {
-        // simple full reload to reflect changes
-        location.reload();
+      const maxCompleted = completedNumbers.length ? Math.max(...completedNumbers) : 0;
+      const allowed = new Set(completedNumbers);
+
+      // Add lessons unlocked via purchase (auth users only)
+      if (isAuthenticated) {
+        userUnlocked.forEach(id => {
+          const parts = id.split('|');
+          if (parts.length === 4 && parts[0] === subject && parts[1] === year && parts[2] === topic) {
+            const lessonNum = parseInt(parts[3], 10);
+            if (lessonNum) allowed.add(lessonNum);
+          }
+        });
       }
-    });
-    window.addEventListener('lessonCompleted', (ev) => {
-      // update UI if possible otherwise reload
-      try {
-        const id = ev.detail && ev.detail.id;
-        if (!id) return location.reload();
-        const parts = id.split('|');
-        if (parts[0] !== subject || String(parts[1]) !== String(year) || parts[2] !== topic) return;
-        const n = parseInt(parts.pop(), 10);
+
+      if (lessonCount > 0) {
+        const next = maxCompleted + 1;
+        if (next <= lessonCount) allowed.add(next);
+        if (maxCompleted === 0) allowed.add(1);
+      }
+
+      // Render each list item
+      for (let n = 1; n <= lessonCount; n++) {
         const li = document.querySelector('[data-lesson="' + n + '"]');
-        if (li) {
+        if (!li) continue;
+        const meta = document.getElementById('meta-' + n);
+        const id = lessonIdFor(n);
+
+        const isCompleted = completedForThis.includes(id);
+        const isAllowed = allowed.has(n);
+
+        if (isCompleted) {
           li.classList.add('completed');
-          const meta = document.getElementById('meta-' + n);
           if (meta) meta.textContent = 'Completed';
           const circle = li.querySelector('.roadmap-circle');
           if (circle) {
@@ -141,12 +143,102 @@
             circle.style.color = '#053';
             circle.style.borderColor = '#4cd964';
           }
+        } else if (isAllowed) {
+          li.classList.add('unlocked');
+          if (meta) meta.textContent = 'Unlocked';
         } else {
-          location.reload();
+          li.classList.add('locked');
+          li.style.opacity = '0.45';
+
+          // Logic for buyable lessons
+          if (isAuthenticated && userCredits >= LESSON_UNLOCK_COST) {
+            if (meta) meta.textContent = 'Locked';
+            li.style.opacity = '0.7'; // Make it more prominent
+
+            const buyButton = document.createElement('button');
+            buyButton.className = 'btn-buy-unlock';
+            buyButton.textContent = `Unlock (${LESSON_UNLOCK_COST}💰)`;
+            buyButton.style.cssText = 'margin-left: 10px; padding: 4px 8px; font-size: 0.8rem; border-radius: 6px; border: 0; background: var(--color-primary); color: white; cursor: pointer;';
+            buyButton.dataset.lessonId = id;
+            buyButton.dataset.lessonNum = n;
+
+            buyButton.addEventListener('click', (e) => {
+              e.stopPropagation(); // Don't trigger li click
+              handleUnlock(id, n, buyButton);
+            });
+
+            meta.parentNode.appendChild(buyButton);
+
+          } else if (isAuthenticated) {
+            if (meta) meta.textContent = `Locked (${LESSON_UNLOCK_COST}💰)`; // Show cost
+          } else {
+            if (meta) meta.textContent = 'Locked'; // Guest
+          }
         }
-      } catch (e) {
-        location.reload();
+
+        // --- Feature: Make ALL allowed (completed or unlocked) lessons clickable ---
+        if (isAllowed) {
+          li.style.cursor = 'pointer';
+          li.addEventListener('click', () => {
+            const url = '/lesson/' + encodeURIComponent(subject) + '/' + encodeURIComponent(year) + '/' + encodeURIComponent(topic) + '/' + encodeURIComponent(n);
+            location.href = url;
+          });
+        }
       }
+    }
+
+    async function handleUnlock(lessonId, lessonNum, button) {
+      button.disabled = true;
+      button.textContent = 'Unlocking...';
+
+      if (!confirm(`Spend ${LESSON_UNLOCK_COST} credits to unlock Lesson ${lessonNum}?`)) {
+        button.disabled = false;
+        button.textContent = `Unlock (${LESSON_UNLOCK_COST}💰)`;
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/lesson/unlock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lessonId })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          alert('Lesson unlocked! The page will now reload.');
+          location.reload(); // Easiest way to update state
+        } else {
+          alert('Unlock failed: ' + (data.message || 'Unknown error'));
+          button.disabled = false;
+          button.textContent = `Unlock (${LESSON_UNLOCK_COST}💰)`;
+        }
+      } catch (err) {
+        console.error('Unlock error:', err);
+        alert('An error occurred. Please try again.');
+        button.disabled = false;
+        button.textContent = `Unlock (${LESSON_UNLOCK_COST}💰)`;
+      }
+    }
+
+    // Initialize
+    loadProgress();
+
+    // Reset progress button (only for guest users)
+    const resetBtn = document.getElementById('resetProgress');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        if (!confirm('Clear all completed lessons stored in localStorage?')) return;
+        const key = 'completedLessons';
+        localStorage.removeItem(key);
+        location.reload();
+      });
+    }
+
+    // Listen for lesson completion events
+    window.addEventListener('lessonCompleted', (ev) => {
+      loadProgress();
     });
   })();
 </script>
