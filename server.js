@@ -550,19 +550,25 @@ app.get("/proxy", requireAuth, require1KCredits, (req, res) => {
 
 // 404 Handler
 app.use((req, res) => {
-  res.status(404).render("error", {
-    message: "Page not found",
-    user: req.user,
-  });
+  res.status(404).send(`
+    <center><pre>
+      ERR_404_PAGE_NOT_FOUND<br>
+      Page not found<br>
+      Please check the URL or try again later.
+    </pre></center>
+  `);
 });
 
 // 500 Handler
 app.use((err, req, res, next) => {
   log(`Internal Server Error: ${err.message}`, "error");
-  res.status(500).render("error", {
-    message: "Internal Server Error",
-    user: req.user,
-  });
+  res.status(500).send(`
+    <center><pre>
+      ERR_500_INTERNAL_SERVER_ERROR<br>
+      Something has gone seriously wrong.<br>
+      Please contact the developer at <a href="mailto:vishesh.kudva@outlook.com">vishesh.kudva@outlook.com</a>.
+    </pre></center>
+  `);
 });
 
 app.listen(PORT, "0.0.0.0", async () => {
