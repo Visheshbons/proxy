@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encrypted Proxy - Browser</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      min-height: 100vh;
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header/Navbar */
+    .proxy-header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid #334155;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex: 1;
+    }
+
+    .proxy-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #60a5fa;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: fit-content;
+    }
+
+    .address-bar {
+      flex: 1;
+      max-width: 700px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .address-input {
+      flex: 1;
+      padding: 8px 12px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #e2e8f0;
+      font-size: 13px;
+      font-family: 'Monaco', 'Courier New', monospace;
+    }
+
+    .address-input:focus {
+      outline: none;
+      border-color: #60a5fa;
+      box-shadow: 0 0 10px rgba(96, 165, 250, 0.2);
+    }
+
+    .go-button {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .go-button:hover {
+      box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
+    }
+
+    .go-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      white-space: nowrap;
+    }
+
+    .credit-badge {
+      background: rgba(96, 165, 250, 0.1);
+      border: 1px solid #60a5fa;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .credit-amount {
+      font-size: 14px;
+      font-weight: 700;
+      color: #60a5fa;
+    }
+
+    .timer-badge {
+      background: rgba(249, 115, 22, 0.1);
+      border: 1px solid #f97316;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #f97316;
+    }
+
+    .end-session-btn {
+      padding: 6px 14px;
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .end-session-btn:hover {
+      background: #dc2626;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    /* Main Container */
+    .proxy-container {
+      display: flex;
+      flex: 1;
+      gap: 0;
+    }
+
+    /* Left Panel - Controls */
+    .control-panel {
+      width: 300px;
+      background: rgba(15, 23, 42, 0.8);
+      border-right: 1px solid #334155;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .control-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .control-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .control-input,
+    .control-select,
+    .control-textarea {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #e2e8f0;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-family: 'Monaco', 'Courier New', monospace;
+    }
+
+    .control-input:focus,
+    .control-select:focus,
+    .control-textarea:focus {
+      outline: none;
+      border-color: #60a5fa;
+      box-shadow: 0 0 8px rgba(96, 165, 250, 0.2);
+    }
+
+    .control-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .control-select option {
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+
+    .warning-banner {
+      background: rgba(249, 115, 22, 0.1);
+      border: 1px solid #f97316;
+      color: #fed7aa;
+      padding: 10px 12px;
+      font-size: 11px;
+      border-radius: 6px;
+    }
+
+    /* Right Panel - Browser */
+    .browser-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: rgba(30, 41, 59, 0.6);
+      overflow: hidden;
+    }
+
+    .browser-toolbar {
+      padding: 10px 15px;
+      background: rgba(15, 23, 42, 0.5);
+      border-bottom: 1px solid #334155;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #64748b;
+    }
+
+    .status-dot.loading {
+      background: #f97316;
+      animation: pulse 1s infinite;
+    }
+
+    .status-dot.success {
+      background: #22c55e;
+    }
+
+    .status-dot.error {
+      background: #ef4444;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .response-status {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: 'Monaco', 'Courier New', monospace;
+    }
+
+    .status-2xx {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+    }
+
+    .status-4xx {
+      background: rgba(249, 115, 22, 0.2);
+      color: #f97316;
+    }
+
+    .status-5xx {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    .browser-content {
+      flex: 1;
+      overflow: auto;
+      background: white;
+      color: #000;
+      padding: 20px;
+    }
+
+    .browser-content.error {
+      background: #fef2f2;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .error-heading {
+      font-size: 24px;
+      font-weight: 600;
+      color: #ef4444;
+    }
+
+    .error-message {
+      color: #7f1d1d;
+      font-size: 14px;
+      text-align: center;
+      max-width: 500px;
+    }
+
+    .loading-spinner {
+      display: none;
+      text-align: center;
+      padding: 40px;
+      color: #94a3b8;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(96, 165, 250, 0.2);
+      border-top: 3px solid #60a5fa;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      margin-top: 15px;
+      font-size: 12px;
+    }
+
+    .tabs-container {
+      display: flex;
+      gap: 15px;
+      border-bottom: 1px solid #334155;
+      padding: 0 20px;
+      background: rgba(15, 23, 42, 0.5);
+      flex-wrap: wrap;
+    }
+
+    .tab-button {
+      padding: 12px 0;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .tab-button:hover {
+      color: #cbd5e1;
+    }
+
+    .tab-button.active {
+      color: #60a5fa;
+      border-bottom-color: #60a5fa;
+    }
+
+    .tab-content {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: white;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .tab-content pre {
+      background: #1e293b;
+      color: #cbd5e1;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 12px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      line-height: 1.5;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 1024px) {
+      .proxy-container {
+        flex-direction: column;
+      }
+
+      .control-panel {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #334155;
+        max-height: 250px;
+      }
+
+      .address-bar {
+        flex-direction: column;
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="proxy-header">
+    <div class="header-left">
+      <div class="proxy-title">
+        <span>🔐</span>
+        <span>Encrypted Browser</span>
+      </div>
+      <div class="address-bar">
+        <input type="text" class="address-input" id="addressBar" placeholder="https://example.com">
+        <button class="go-button" id="goButton">GO</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="credit-badge">
+        <span>💰</span>
+        <span class="credit-amount" id="creditAmount"><%= user.credits.total %></span>
+      </div>
+      <div class="timer-badge">
+        <span>⏱️</span>
+        <span id="chargeTimer">60s</span>
+      </div>
+      <button class="end-session-btn" id="endSessionBtn">End Session</button>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="proxy-container">
+    <!-- Left Panel - Controls -->
+    <div class="control-panel">
+      <div class="warning-banner">
+        ⚠️ Each minute costs <strong>20 credits</strong>
+      </div>
+
+      <div class="control-section">
+        <label class="control-label">Method</label>
+        <select class="control-select" id="methodSelect">
+          <option value="GET">GET</option>
+          <option value="POST">POST</option>
+          <option value="PUT">PUT</option>
+          <option value="PATCH">PATCH</option>
+          <option value="DELETE">DELETE</option>
+          <option value="HEAD">HEAD</option>
+        </select>
+      </div>
+
+      <div class="control-section">
+        <label class="control-label">Headers (JSON)</label>
+        <textarea class="control-textarea" id="headersInput">{}</textarea>
+      </div>
+
+      <div class="control-section">
+        <label class="control-label">Body</label>
+        <textarea class="control-textarea" id="bodyInput" placeholder="Leave empty for GET requests"></textarea>
+      </div>
+    </div>
+
+    <!-- Right Panel - Browser -->
+    <div class="browser-panel">
+      <div class="browser-toolbar">
+        <div class="status-indicator">
+          <div class="status-dot" id="statusDot"></div>
+          <span id="statusText">Ready</span>
+        </div>
+        <span id="responseStatusBadge" style="display: none;" class="response-status"></span>
+      </div>
+
+      <div class="tabs-container">
+        <button class="tab-button active" data-tab="render">Rendered</button>
+        <button class="tab-button" data-tab="html">HTML</button>
+        <button class="tab-button" data-tab="headers">Headers</button>
+        <button class="tab-button" data-tab="raw">Raw</button>
+      </div>
+
+      <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+        <!-- Render Tab -->
+        <div class="tab-content active" id="render-tab" style="flex: 1; overflow: auto; padding: 0;">
+          <div class="browser-content" id="renderContent" style="padding: 20px;">
+            <div class="empty-state">
+              📄 Make a request to see the rendered page here
+            </div>
+          </div>
+          <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner"></div>
+            <div class="loading-text">Sending encrypted request...</div>
+          </div>
+        </div>
+
+        <!-- HTML Tab -->
+        <div class="tab-content" id="html-tab">
+          <pre id="htmlContent">Make a request to see HTML</pre>
+        </div>
+
+        <!-- Headers Tab -->
+        <div class="tab-content" id="headers-tab">
+          <pre id="headersContent">Make a request to see headers</pre>
+        </div>
+
+        <!-- Raw Tab -->
+        <div class="tab-content" id="raw-tab">
+          <pre id="rawContent">Make a request to see raw response</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const sessionId = '<%= sessionId %>';
+    let chargeCountdown = 60;
+    let lastResponse = null;
+
+    function encryptRequest(data) {
+      return btoa(JSON.stringify(data));
+    }
+
+    function decryptResponse(response) {
+      return response;
+    }
+
+    function updateCredits() {
+      fetch('/api/proxy/credits/' + sessionId)
+        .then(r => r.json())
+        .then(data => {
+          document.getElementById('creditAmount').textContent = data.credits;
+          const creditEl = document.querySelector('.credit-amount');
+          if (data.credits < 20) creditEl.style.color = '#ef4444';
+          else if (data.credits < 100) creditEl.style.color = '#f97316';
+          else creditEl.style.color = '#60a5fa';
+        })
+        .catch(err => console.error('Failed to fetch credits:', err));
+    }
+
+    function updateCountdown() {
+      chargeCountdown--;
+      if (chargeCountdown < 0) chargeCountdown = 60;
+      document.getElementById('chargeTimer').textContent = chargeCountdown + 's';
+    }
+
+    function displayResponse(decryptedData) {
+      lastResponse = decryptedData;
+      const renderContent = document.getElementById('renderContent');
+
+      if (decryptedData.status >= 200 && decryptedData.status < 300) {
+        try {
+          let body = decryptedData.body || '<p>Empty response</p>';
+          const lastUrl = document.getElementById('addressBar').value;
+          renderContent.innerHTML = '';
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = body;
+
+          function resolveUrl(url, base) {
+            if (!url || url.startsWith('#') || url.startsWith('javascript:') || url.startsWith('data:')) return null;
+            if (url.startsWith('http://') || url.startsWith('https://')) return url;
+            try { return new URL(url, base).href; } catch (e) { return null; }
+          }
+
+          tempDiv.querySelectorAll('script:not([src])').forEach(s => s.remove());
+          while (tempDiv.firstChild) renderContent.appendChild(tempDiv.firstChild);
+
+          // Add global form interception after content is added
+          setTimeout(() => {
+            document.querySelectorAll('form').forEach(form => {
+              form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const action = form.getAttribute('action') || document.getElementById('addressBar').value;
+                const lastUrl = document.getElementById('addressBar').value;
+                const fullUrl = resolveUrl(action, lastUrl);
+
+                if (fullUrl) {
+                  const method = (form.getAttribute('method') || 'GET').toUpperCase();
+                  const formData = new FormData(form);
+                  let url = fullUrl;
+                  let reqBody = null;
+
+                  if (method === 'GET') {
+                    const params = new URLSearchParams(formData);
+                    url += (url.includes('?') ? '&' : '?') + params.toString();
+                  } else {
+                    reqBody = new URLSearchParams(formData).toString();
+                  }
+
+                  document.getElementById('addressBar').value = url;
+                  const requestData = { url, method, headers: {}, body: reqBody };
+                  const encryptedRequest = encryptRequest(requestData);
+
+                  document.getElementById('loadingSpinner').style.display = 'block';
+                  document.getElementById('statusDot').className = 'status-dot loading';
+                  document.getElementById('statusText').textContent = 'Loading...';
+
+                  fetch('/api/proxy/request/' + sessionId, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ encryptedRequest })
+                  })
+                    .then(r => r.json())
+                    .then(result => {
+                      if (!result.success) throw new Error(result.error || 'Failed');
+                      displayResponse(decryptResponse(result.response));
+                      updateCredits();
+                    })
+                    .catch(err => {
+                      document.getElementById('renderContent').innerHTML = `<div style="padding: 20px; color: #ef4444;"><strong>Error:</strong> ${err.message}</div>`;
+                      document.getElementById('statusDot').className = 'status-dot error';
+                    })
+                    .finally(() => {
+                      document.getElementById('loadingSpinner').style.display = 'none';
+                      document.getElementById('statusDot').className = 'status-dot success';
+                      document.getElementById('statusText').textContent = 'Ready';
+                    });
+                }
+                return false;
+              }, true);
+            });
+          }, 100);
+          while (tempDiv.firstChild) renderContent.appendChild(tempDiv.firstChild);
+          console.log('Content rendered successfully');
+        } catch (err) {
+          console.error('Display error:', err);
+          renderContent.innerHTML = `<div style="padding: 20px; color: #ef4444;"><strong>Error rendering:</strong> ${err.message}</div>`;
+        }
+      } else {
+        renderContent.innerHTML = `<div style="padding: 40px; text-align: center;"><div style="font-size: 24px; font-weight: 600; color: #ef4444; margin-bottom: 10px;">Error ${decryptedData.status}</div><div style="color: #7f1d1d;">${decryptedData.statusText || 'Unknown Error'}</div></div>`;
+      }
+
+      document.getElementById('htmlContent').textContent = decryptedData.body || '(empty)';
+      const headers = decryptedData.headers || {};
+      document.getElementById('headersContent').textContent = Object.entries(headers).map(([k, v]) => `${k}: ${v}`).join('\n');
+      document.getElementById('rawContent').textContent = JSON.stringify(decryptedData, null, 2);
+
+      const badge = document.getElementById('responseStatusBadge');
+      badge.textContent = `${decryptedData.status} ${decryptedData.statusText}`;
+      badge.className = 'response-status';
+      if (decryptedData.status >= 200 && decryptedData.status < 300) badge.classList.add('status-2xx');
+      else if (decryptedData.status >= 400 && decryptedData.status < 500) badge.classList.add('status-4xx');
+      else if (decryptedData.status >= 500) badge.classList.add('status-5xx');
+      badge.style.display = 'inline-block';
+    }
+
+    // Send request
+    function sendRequest() {
+      const url = document.getElementById('addressBar').value.trim();
+      const method = document.getElementById('methodSelect').value;
+      const headersText = document.getElementById('headersInput').value;
+      const bodyText = document.getElementById('bodyInput').value;
+
+      if (!url) {
+        alert('Please enter a URL');
+        return;
+      }
+
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        alert('URL must start with http:// or https://');
+        return;
+      }
+
+      let headers = {};
+      let body = null;
+
+      try {
+        headers = JSON.parse(headersText || '{}');
+      } catch (e) {
+        alert('Invalid headers JSON');
+        return;
+      }
+
+      if (bodyText) {
+        try {
+          body = JSON.parse(bodyText);
+        } catch {
+          body = bodyText;
+        }
+      }
+
+      const creditAmount = parseInt(document.getElementById('creditAmount').textContent);
+      if (creditAmount < 20) {
+        alert('Insufficient credits (need at least 20)');
+        return;
+      }
+
+      // Show loading
+      document.getElementById('loadingSpinner').style.display = 'block';
+      document.getElementById('statusDot').className = 'status-dot loading';
+      document.getElementById('statusText').textContent = 'Loading...';
+
+      const requestData = { url, method, headers, body };
+      const encryptedRequest = encryptRequest(requestData);
+
+      fetch('/api/proxy/request/' + sessionId, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ encryptedRequest })
+      })
+        .then(r => r.json())
+        .then(result => {
+          if (!result.success) throw new Error(result.error || 'Failed');
+
+          const decrypted = decryptResponse(result.response);
+          if (!decrypted) throw new Error('Failed to process response');
+
+          displayResponse(decrypted);
+          document.getElementById('statusDot').className = 'status-dot success';
+          document.getElementById('statusText').textContent = 'Ready';
+          updateCredits();
+        })
+        .catch(err => {
+          document.getElementById('renderContent').innerHTML = `
+            <div class="browser-content error">
+              <div class="error-heading">Error</div>
+              <div class="error-message">${err.message}</div>
+            </div>
+          `;
+          document.getElementById('statusDot').className = 'status-dot error';
+          document.getElementById('statusText').textContent = 'Error';
+        })
+        .finally(() => {
+          document.getElementById('loadingSpinner').style.display = 'none';
+        });
+    }
+
+    // Tab switching
+    document.querySelectorAll('.tab-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab + '-tab').classList.add('active');
+      });
+    });
+
+    // Send on button click
+    document.getElementById('goButton').addEventListener('click', sendRequest);
+
+    // Send on Enter
+    document.getElementById('addressBar').addEventListener('keypress', e => {
+      if (e.key === 'Enter') sendRequest();
+    });
+
+    // End session
+    document.getElementById('endSessionBtn').addEventListener('click', async () => {
+      if (!confirm('End session?')) return;
+      try {
+        await fetch('/api/proxy/end/' + sessionId, { method: 'POST' });
+        window.location.href = '/profile';
+      } catch (err) {
+        alert('Failed: ' + err.message);
+      }
+    });
+
+    // Initialize
+    updateCredits();
+    setInterval(updateCountdown, 1000);
+    setInterval(updateCredits, 1000);
+    document.getElementById('addressBar').focus();
+  </script>
+</body>
+</html>

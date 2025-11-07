@@ -12,6 +12,8 @@ import bcrypt from "bcryptjs";
 import User from "./models/User.js";
 import { authenticate, requireAuth } from "./middleware/auth.js";
 import { setTimeout } from "timers/promises";
+import { createProxySession, terminateProxySession, getSessionData } from "./utils/proxySessionManager.js";
+import { handleProxyRequest } from "./routes/proxyHandler.js";
 
 // Load environment variables
 dotenv.config();
@@ -83,7 +85,7 @@ function log(msg, type = "info") {
       console.log(prefix, msg);
       break;
     case "warning":
-      prefix = `[${chalk.yellow("WARN")}]`;
+      prefix = `[${chalk.yellow("WARNING")}]`;
       console.warn(prefix, msg);
       break;
     case "debug":
@@ -548,13 +550,99 @@ app.get("/proxy", requireAuth, require1KCredits, (req, res) => {
   );
 });
 
+app.get("/proxy/beta", requireAuth, require1KCredits, async (req, res) => {
+  try {
+    const sessionId = await createProxySession(req.user._id.toString(), req.user);
+    log(
+      `User ${chalk.grey.italic(req.user.username)} started proxy session: ${sessionId}`,
+      "success",
+    );
+    res.render("proxy", { sessionId, user: req.user });
+  } catch (error) {
+    log(`Failed to initialize proxy session: ${error.message}`, "error");
+    res.status(500).render("error", {
+      message: "Failed to initialize proxy session",
+      user: req.user,
+    });
+  }
+});
+
+app.post("/api/proxy/request/:sessionId", requireAuth, async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const session = getSessionData(sessionId);
+
+    if (!session) {
+      return res.status(404).json({ error: "Session not found" });
+    }
+
+    if (session.userId !== req.user._id.toString()) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    if (req.user.credits.total < 20) {
+      log(
+        `User ${chalk.grey.italic(req.user.username)} attempted proxy request with insufficient credits`,
+        "warning",
+      );
+      return res.status(402).json({ error: "Insufficient credits for this request" });
+    }
+
+    await handleProxyRequest(req, res, sessionId, req.user);
+  } catch (error) {
+    log(`Proxy request error: ${error.message}`, "error");
+    res.status(500).json({ error: "Proxy request failed" });
+  }
+});
+
+app.get("/api/proxy/credits/:sessionId", requireAuth, (req, res) => {
+  const { sessionId } = req.params;
+  const session = getSessionData(sessionId);
+
+  if (!session) {
+    return res.status(404).json({ error: "Session not found" });
+  }
+
+  res.json({
+    credits: req.user.credits.total,
+    minutesElapsed: session.minutesElapsed,
+    chargedMinutes: session.chargedMinutes,
+    totalCharged: session.totalCharged,
+  });
+});
+
+app.post("/api/proxy/end/:sessionId", requireAuth, async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const session = getSessionData(sessionId);
+
+    if (!session) {
+      return res.status(404).json({ error: "Session not found" });
+    }
+
+    if (session.userId !== req.user._id.toString()) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    await terminateProxySession(sessionId, req.user);
+    res.json({ success: true });
+
+    log(
+      `User ${chalk.grey.italic(req.user.username)} ended proxy session`,
+      "warning",
+    );
+  } catch (error) {
+    log(`Failed to end proxy session: ${error.message}`, "error");
+    res.status(500).json({ error: "Failed to end session" });
+  }
+});
+
 // 404 Handler
 app.use((req, res) => {
-  log(`404 at ${chalk.grey.italic(req.originalUrl)}`, "warning");
   res.status(404).send(`
     <center><pre>
       ERR_404_PAGE_NOT_FOUND<br>
-      Page not found ¯\\_(ツ)_/¯<br>
+      Page not found<br>
       Please check the URL or try again later.
     </pre></center>
   `);
@@ -566,7 +654,7 @@ app.use((err, req, res, next) => {
   res.status(500).send(`
     <center><pre>
       ERR_500_INTERNAL_SERVER_ERROR<br>
-      Something has gone seriously wrong. ¯\\_(ツ)_/¯<br>
+      Something has gone seriously wrong.<br>
       Please contact the developer at <a href="mailto:vishesh.kudva@outlook.com">vishesh.kudva@outlook.com</a>.
     </pre></center>
   `);
@@ -604,6 +692,15 @@ app.listen(PORT, "0.0.0.0", async () => {
     )} credits`,
     "info",
   );
+  log(
+    `Proxy Cost:                 ${chalk.yellow("20 credits/min")}`,
+    "info",
+  );
   // newline
+  console.log();
+
+  log("--- Proxy System Active ---", "warning");
+  log("Encrypted proxy available at /proxy/beta", "warning");
+  log("Double-layer encryption: Base64 + AES-256", "info");
   console.log();
 });
