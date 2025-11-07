@@ -297,10 +297,13 @@
 
     .browser-content {
       flex: 1;
-      overflow: auto;
+      overflow: hidden;
       background: white;
       color: #000;
       padding: 20px;
+      position: relative;
+      min-height: 600px;
+      height: 100%;
     }
 
     .browser-content.error {
@@ -483,6 +486,10 @@
         ⚠️ Each minute costs <strong>20 credits</strong>
       </div>
 
+      <div class="warning-banner" style="background: rgba(239, 68, 68, 0.1); border-color: #ef4444; color: #fca5a5;">
+        ⚠️ <strong>Note:</strong> Some sites (like Google) have bot detection and may not work properly through proxies
+      </div>
+
       <div class="control-section">
         <label class="control-label">Method</label>
         <select class="control-select" id="methodSelect">
@@ -497,7 +504,15 @@
 
       <div class="control-section">
         <label class="control-label">Headers (JSON)</label>
-        <textarea class="control-textarea" id="headersInput">{}</textarea>
+        <textarea class="control-textarea" id="headersInput">{
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+  "Accept-Language": "en-US,en;q=0.5",
+  "Accept-Encoding": "gzip, deflate, br",
+  "DNT": "1",
+  "Connection": "keep-alive",
+  "Upgrade-Insecure-Requests": "1"
+}</textarea>
       </div>
 
       <div class="control-section">
@@ -523,10 +538,10 @@
         <button class="tab-button" data-tab="raw">Raw</button>
       </div>
 
-      <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+      <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0;">
         <!-- Render Tab -->
-        <div class="tab-content active" id="render-tab" style="flex: 1; overflow: auto; padding: 0;">
-          <div class="browser-content" id="renderContent" style="padding: 20px;">
+        <div class="tab-content active" id="render-tab" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+          <div class="browser-content" id="renderContent" style="flex: 1; overflow: auto; padding: 0;">
             <div class="empty-state">
               📄 Make a request to see the rendered page here
             </div>
@@ -538,17 +553,17 @@
         </div>
 
         <!-- HTML Tab -->
-        <div class="tab-content" id="html-tab">
+        <div class="tab-content" id="html-tab" style="flex: 1; overflow: auto;">
           <pre id="htmlContent">Make a request to see HTML</pre>
         </div>
 
         <!-- Headers Tab -->
-        <div class="tab-content" id="headers-tab">
+        <div class="tab-content" id="headers-tab" style="flex: 1; overflow: auto;">
           <pre id="headersContent">Make a request to see headers</pre>
         </div>
 
         <!-- Raw Tab -->
-        <div class="tab-content" id="raw-tab">
+        <div class="tab-content" id="raw-tab" style="flex: 1; overflow: auto;">
           <pre id="rawContent">Make a request to see raw response</pre>
         </div>
       </div>
@@ -569,7 +584,8 @@
     }
 
     function updateCredits() {
-      fetch('/api/proxy/credits/' + sessionId)
+      const apiUrl = window.location.origin + '/api/proxy/credits/' + sessionId;
+      fetch(apiUrl)
         .then(r => r.json())
         .then(data => {
           document.getElementById('creditAmount').textContent = data.credits;
@@ -594,84 +610,144 @@
       if (decryptedData.status >= 200 && decryptedData.status < 300) {
         try {
           let body = decryptedData.body || '<p>Empty response</p>';
-          const lastUrl = document.getElementById('addressBar').value;
+          const currentUrl = document.getElementById('addressBar').value;
+
+          // Clear content
           renderContent.innerHTML = '';
-          const tempDiv = document.createElement('div');
-          tempDiv.innerHTML = body;
+          renderContent.style.padding = '0';
 
-          function resolveUrl(url, base) {
-            if (!url || url.startsWith('#') || url.startsWith('javascript:') || url.startsWith('data:')) return null;
-            if (url.startsWith('http://') || url.startsWith('https://')) return url;
-            try { return new URL(url, base).href; } catch (e) { return null; }
-          }
+          // Create sandboxed iframe with srcdoc
+          const iframe = document.createElement('iframe');
+          iframe.style.cssText = 'width: 100%; height: 100%; min-height: 600px; border: none; background: white; display: block;';
+          iframe.sandbox = 'allow-scripts allow-forms';
 
-          tempDiv.querySelectorAll('script:not([src])').forEach(s => s.remove());
-          while (tempDiv.firstChild) renderContent.appendChild(tempDiv.firstChild);
+          // Parse HTML and rewrite it
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(body, 'text/html');
 
-          // Add global form interception after content is added
-          setTimeout(() => {
-            document.querySelectorAll('form').forEach(form => {
-              form.addEventListener('submit', (e) => {
+          // Remove base tags
+          doc.querySelectorAll('base').forEach(el => el.remove());
+
+          // Rewrite all URLs to use data attributes
+          doc.querySelectorAll('a').forEach(a => {
+            const href = a.getAttribute('href');
+            if (href && !href.startsWith('#') && !href.startsWith('javascript:') && !href.startsWith('data:')) {
+              try {
+                const absoluteUrl = new URL(href, currentUrl).href;
+                a.setAttribute('data-proxy-href', absoluteUrl);
+                a.setAttribute('href', 'javascript:void(0)');
+                a.style.cursor = 'pointer';
+                a.style.color = '#1a0dab';
+                a.style.textDecoration = 'underline';
+              } catch (e) {
+                console.error('Invalid URL:', e);
+              }
+            }
+          });
+
+          // Rewrite forms
+          doc.querySelectorAll('form').forEach(form => {
+            const action = form.getAttribute('action');
+            const method = form.getAttribute('method') || 'GET';
+            if (action) {
+              try {
+                const absoluteUrl = new URL(action, currentUrl).href;
+                form.setAttribute('data-proxy-action', absoluteUrl);
+              } catch (e) {
+                form.setAttribute('data-proxy-action', currentUrl);
+              }
+            } else {
+              form.setAttribute('data-proxy-action', currentUrl);
+            }
+            form.setAttribute('data-proxy-method', method);
+            form.setAttribute('action', 'javascript:void(0)');
+          });
+
+          // Inject interception script
+          const interceptScript = doc.createElement('script');
+          interceptScript.textContent = `
+            (function() {
+              // Prevent all navigation with capture phase
+              document.addEventListener('click', function(e) {
+                const link = e.target.closest('a[data-proxy-href]');
+                if (link) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.stopImmediatePropagation();
+                  const url = link.getAttribute('data-proxy-href');
+                  window.parent.postMessage({ type: 'navigate', url: url }, '*');
+                  return false;
+                }
+              }, true);
+
+              document.addEventListener('submit', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
+                e.stopImmediatePropagation();
 
-                const action = form.getAttribute('action') || document.getElementById('addressBar').value;
-                const lastUrl = document.getElementById('addressBar').value;
-                const fullUrl = resolveUrl(action, lastUrl);
+                const form = e.target;
+                const action = form.getAttribute('data-proxy-action') || window.location.href;
+                const method = (form.getAttribute('data-proxy-method') || 'GET').toUpperCase();
+                const formData = new FormData(form);
 
-                if (fullUrl) {
-                  const method = (form.getAttribute('method') || 'GET').toUpperCase();
-                  const formData = new FormData(form);
-                  let url = fullUrl;
-                  let reqBody = null;
+                window.parent.postMessage({
+                  type: 'submit',
+                  url: action,
+                  method: method,
+                  data: Array.from(formData.entries())
+                }, '*');
 
-                  if (method === 'GET') {
-                    const params = new URLSearchParams(formData);
-                    url += (url.includes('?') ? '&' : '?') + params.toString();
-                  } else {
-                    reqBody = new URLSearchParams(formData).toString();
-                  }
-
-                  document.getElementById('addressBar').value = url;
-                  const requestData = { url, method, headers: {}, body: reqBody };
-                  const encryptedRequest = encryptRequest(requestData);
-
-                  document.getElementById('loadingSpinner').style.display = 'block';
-                  document.getElementById('statusDot').className = 'status-dot loading';
-                  document.getElementById('statusText').textContent = 'Loading...';
-
-                  fetch('/api/proxy/request/' + sessionId, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ encryptedRequest })
-                  })
-                    .then(r => r.json())
-                    .then(result => {
-                      if (!result.success) throw new Error(result.error || 'Failed');
-                      displayResponse(decryptResponse(result.response));
-                      updateCredits();
-                    })
-                    .catch(err => {
-                      document.getElementById('renderContent').innerHTML = `<div style="padding: 20px; color: #ef4444;"><strong>Error:</strong> ${err.message}</div>`;
-                      document.getElementById('statusDot').className = 'status-dot error';
-                    })
-                    .finally(() => {
-                      document.getElementById('loadingSpinner').style.display = 'none';
-                      document.getElementById('statusDot').className = 'status-dot success';
-                      document.getElementById('statusText').textContent = 'Ready';
-                    });
-                }
                 return false;
               }, true);
-            });
-          }, 100);
-          while (tempDiv.firstChild) renderContent.appendChild(tempDiv.firstChild);
-          console.log('Content rendered successfully');
+
+              // Block window.open
+              window.open = function(url) {
+                if (url) {
+                  window.parent.postMessage({ type: 'navigate', url: url }, '*');
+                }
+                return null;
+              };
+
+              // Try to intercept location changes (may not work in all cases)
+              try {
+                const originalLocation = window.location.href;
+                let locationProxy = originalLocation;
+
+                // Override common navigation methods
+                history.pushState = history.replaceState = function() {
+                  // Block history manipulation
+                  return;
+                };
+
+                // Monitor for unauthorized navigation attempts
+                setInterval(function() {
+                  if (window.location.href !== originalLocation && window.location.href !== 'about:srcdoc') {
+                    // If location changed, notify parent
+                    window.parent.postMessage({ type: 'navigate', url: window.location.href }, '*');
+                  }
+                }, 100);
+              } catch (e) {
+                console.log('Could not setup location monitoring:', e);
+              }
+            })();
+          `;
+
+          if (doc.body) {
+            doc.body.appendChild(interceptScript);
+          }
+
+          // Set srcdoc
+          iframe.srcdoc = doc.documentElement.outerHTML;
+          renderContent.appendChild(iframe);
+
+          console.log('Content rendered in sandboxed iframe');
         } catch (err) {
           console.error('Display error:', err);
           renderContent.innerHTML = `<div style="padding: 20px; color: #ef4444;"><strong>Error rendering:</strong> ${err.message}</div>`;
+          renderContent.style.padding = '20px';
         }
       } else {
+        renderContent.style.padding = '20px';
         renderContent.innerHTML = `<div style="padding: 40px; text-align: center;"><div style="font-size: 24px; font-weight: 600; color: #ef4444; margin-bottom: 10px;">Error ${decryptedData.status}</div><div style="color: #7f1d1d;">${decryptedData.statusText || 'Unknown Error'}</div></div>`;
       }
 
@@ -738,7 +814,8 @@
       const requestData = { url, method, headers, body };
       const encryptedRequest = encryptRequest(requestData);
 
-      fetch('/api/proxy/request/' + sessionId, {
+      const apiUrl = window.location.origin + '/api/proxy/request/' + sessionId;
+      fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ encryptedRequest })
@@ -792,7 +869,8 @@
     document.getElementById('endSessionBtn').addEventListener('click', async () => {
       if (!confirm('End session?')) return;
       try {
-        await fetch('/api/proxy/end/' + sessionId, { method: 'POST' });
+        const apiUrl = window.location.origin + '/api/proxy/end/' + sessionId;
+        await fetch(apiUrl, { method: 'POST' });
         window.location.href = '/profile';
       } catch (err) {
         alert('Failed: ' + err.message);
@@ -804,6 +882,31 @@
     setInterval(updateCountdown, 1000);
     setInterval(updateCredits, 1000);
     document.getElementById('addressBar').focus();
+
+    // Listen for messages from sandboxed iframe
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'navigate') {
+        document.getElementById('addressBar').value = event.data.url;
+        sendRequest();
+      } else if (event.data && event.data.type === 'submit') {
+        const { url, method, data } = event.data;
+        document.getElementById('addressBar').value = url;
+        document.getElementById('methodSelect').value = method;
+
+        if (method === 'GET') {
+          const params = new URLSearchParams(data);
+          const paramStr = params.toString();
+          if (paramStr) {
+            document.getElementById('addressBar').value = url + (url.includes('?') ? '&' : '?') + paramStr;
+          }
+          document.getElementById('bodyInput').value = '';
+        } else {
+          document.getElementById('bodyInput').value = new URLSearchParams(data).toString();
+        }
+
+        sendRequest();
+      }
+    });
   </script>
 </body>
 </html>
