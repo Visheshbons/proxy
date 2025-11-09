@@ -261,7 +261,7 @@ app.post("/auth/login", async (req, res) => {
 
     req.session.token = token;
 
-    const redirectUrl = req.body.redirect || "/profile";
+    const redirectUrl = "/profile";
     res.redirect(redirectUrl);
   } catch (error) {
     log(`Login error: ${error.message}`, "error");
