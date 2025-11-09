@@ -1,3 +1,8 @@
+// Load environment variables FIRST - before any other imports!
+import dotenv from "dotenv";
+dotenv.config();
+
+// Now import everything else
 import express from "express";
 import path from "path";
 import fs from "fs/promises";
@@ -6,7 +11,6 @@ import chalk from "chalk";
 import mongoose from "mongoose";
 import session from "express-session";
 import MongoStore from "connect-mongo";
-import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "./models/User.js";
@@ -15,9 +19,6 @@ import { setTimeout } from "timers/promises";
 import { createProxySession, terminateProxySession, getSessionData } from "./utils/proxySessionManager.js";
 import { handleProxyRequest } from "./routes/proxyHandler.js";
 import { generateVerificationCode, sendVerificationEmail } from "./utils/emailService.js";
-
-// Load environment variables
-dotenv.config();
 
 // --- Centralized Credit & Economy Configuration ---
 const LESSON_UNLOCK_COST = 50; // Cost to unlock a single lesson
@@ -194,7 +195,8 @@ app.post("/auth/register", async (req, res) => {
       log(`Failed to send verification email: ${emailError.message}`, "error");
       await User.findByIdAndDelete(user._id);
       return res.render("auth/register", {
-        error: "Failed to send verification email. Please check your email address and try again.",
+        error:
+          "Failed to send verification email. Please check your email address and try again.",
       });
     }
 
@@ -345,7 +347,10 @@ app.post("/auth/verify-email", requireAuth, async (req, res) => {
     user.verificationCodeExpires = null;
     await user.save();
 
-    log(`User ${chalk.grey.italic(user.username)} verified their email`, "success");
+    log(
+      `User ${chalk.grey.italic(user.username)} verified their email`,
+      "success",
+    );
 
     delete req.session.pendingVerification;
     res.redirect("/profile");
@@ -373,7 +378,10 @@ app.post("/auth/resend-verification", requireAuth, async (req, res) => {
     await user.save();
 
     await sendVerificationEmail(user.email, user.username, verificationCode);
-    log(`Resent verification email to ${chalk.grey.italic(user.email)}`, "info");
+    log(
+      `Resent verification email to ${chalk.grey.italic(user.email)}`,
+      "info",
+    );
 
     res.render("auth/verify-email", {
       email: user.email,
@@ -681,7 +689,10 @@ app.get("/proxy", requireAuth, require1KCredits, (req, res) => {
 
 app.get("/proxy/beta", requireAuth, require1KCredits, async (req, res) => {
   try {
-    const sessionId = await createProxySession(req.user._id.toString(), req.user);
+    const sessionId = await createProxySession(
+      req.user._id.toString(),
+      req.user,
+    );
     log(
       `User ${chalk.grey.italic(req.user.username)} started proxy session: ${sessionId}`,
       "success",
@@ -714,7 +725,9 @@ app.post("/api/proxy/request/:sessionId", requireAuth, async (req, res) => {
         `User ${chalk.grey.italic(req.user.username)} attempted proxy request with insufficient credits`,
         "warning",
       );
-      return res.status(402).json({ error: "Insufficient credits for this request" });
+      return res
+        .status(402)
+        .json({ error: "Insufficient credits for this request" });
     }
 
     await handleProxyRequest(req, res, sessionId, req.user);
@@ -821,10 +834,7 @@ app.listen(PORT, "0.0.0.0", async () => {
     )} credits`,
     "info",
   );
-  log(
-    `Proxy Cost:                 ${chalk.yellow("20 credits/min")}`,
-    "info",
-  );
+  log(`Proxy Cost:                 ${chalk.yellow("20 credits/min")}`, "info");
   // newline
   console.log();
 

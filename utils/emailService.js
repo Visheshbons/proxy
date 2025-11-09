@@ -1,14 +1,27 @@
 import nodemailer from "nodemailer";
 import crypto from "crypto";
+import dotenv from "dotenv";
+
+// Load .env file directly in this module
+dotenv.config();
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT || 587,
+  port: parseInt(process.env.SMTP_PORT) || 587,
   secure: process.env.SMTP_SECURE === "true",
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+});
+
+// Test connection on startup (only log errors)
+transporter.verify(function (error, success) {
+  if (error) {
+    console.error('❌ SMTP Connection Error:', error.message);
+  } else {
+    console.log('✅ SMTP Server is ready to send emails');
+  }
 });
 
 export function generateVerificationCode() {
@@ -171,10 +184,10 @@ export async function sendVerificationEmail(email, username, code) {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
-    console.error("Email sending failed:", error);
+    console.error("Email sending failed:", error.message);
     throw error;
   }
 }
