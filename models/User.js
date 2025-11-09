@@ -22,6 +22,18 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6,
   },
+  emailVerified: {
+    type: Boolean,
+    default: false,
+  },
+  verificationCode: {
+    type: String,
+    default: null,
+  },
+  verificationCodeExpires: {
+    type: Date,
+    default: null,
+  },
   completedLessons: [
     {
       type: String, // Format: "subject|year|topic|lesson"

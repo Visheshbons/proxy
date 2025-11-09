@@ -14,6 +14,7 @@ import { authenticate, requireAuth } from "./middleware/auth.js";
 import { setTimeout } from "timers/promises";
 import { createProxySession, terminateProxySession, getSessionData } from "./utils/proxySessionManager.js";
 import { handleProxyRequest } from "./routes/proxyHandler.js";
+import { generateVerificationCode, sendVerificationEmail } from "./utils/emailService.js";
 
 // Load environment variables
 dotenv.config();
@@ -161,7 +162,15 @@ app.post("/auth/register", async (req, res) => {
       });
     }
 
-    const user = new User({ username, email, password });
+    const verificationCode = generateVerificationCode();
+    const user = new User({
+      username,
+      email,
+      password,
+      verificationCode,
+      verificationCodeExpires: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+      emailVerified: false,
+    });
 
     // Migrate localStorage data if provided
     if (req.body.migrateData) {
@@ -177,12 +186,26 @@ app.post("/auth/register", async (req, res) => {
 
     log(`New user registered: ${chalk.grey.italic(user.username)}`, "info");
 
+    // Send verification email
+    try {
+      await sendVerificationEmail(email, username, verificationCode);
+      log(`Verification email sent to ${chalk.grey.italic(email)}`, "success");
+    } catch (emailError) {
+      log(`Failed to send verification email: ${emailError.message}`, "error");
+      await User.findByIdAndDelete(user._id);
+      return res.render("auth/register", {
+        error: "Failed to send verification email. Please check your email address and try again.",
+      });
+    }
+
+    // Create session with unverified user
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
     req.session.token = token;
-    res.redirect("/profile");
+    req.session.pendingVerification = true;
+    res.redirect("/auth/verify-email");
   } catch (error) {
     log(`Registration error: ${error.message}`, "error");
     res.render("auth/register", {
@@ -206,6 +229,16 @@ app.post("/auth/login", async (req, res) => {
         error: "Invalid email or password",
         redirect: req.body.redirect,
       });
+    }
+
+    // Check if email is verified
+    if (!user.emailVerified) {
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      req.session.token = token;
+      req.session.pendingVerification = true;
+      return res.redirect("/auth/verify-email");
     }
 
     // Check and award daily login credits
@@ -259,6 +292,102 @@ app.get("/auth/logout", (req, res) => {
 
     res.redirect("/");
   });
+});
+
+// Email Verification Routes
+app.get("/auth/verify-email", requireAuth, async (req, res) => {
+  if (req.user.emailVerified) {
+    return res.redirect("/profile");
+  }
+
+  res.render("auth/verify-email", {
+    email: req.user.email,
+    error: null,
+    success: null,
+  });
+});
+
+app.post("/auth/verify-email", requireAuth, async (req, res) => {
+  try {
+    const { code } = req.body;
+    const user = req.user;
+
+    if (user.emailVerified) {
+      return res.redirect("/profile");
+    }
+
+    if (!user.verificationCode || !user.verificationCodeExpires) {
+      return res.render("auth/verify-email", {
+        email: user.email,
+        error: "Verification code not found. Please request a new one.",
+        success: null,
+      });
+    }
+
+    if (new Date() > user.verificationCodeExpires) {
+      return res.render("auth/verify-email", {
+        email: user.email,
+        error: "Verification code has expired. Please request a new one.",
+        success: null,
+      });
+    }
+
+    if (code !== user.verificationCode) {
+      return res.render("auth/verify-email", {
+        email: user.email,
+        error: "Invalid verification code. Please check and try again.",
+        success: null,
+      });
+    }
+
+    user.emailVerified = true;
+    user.verificationCode = null;
+    user.verificationCodeExpires = null;
+    await user.save();
+
+    log(`User ${chalk.grey.italic(user.username)} verified their email`, "success");
+
+    delete req.session.pendingVerification;
+    res.redirect("/profile");
+  } catch (error) {
+    log(`Verification error: ${error.message}`, "error");
+    res.render("auth/verify-email", {
+      email: req.user.email,
+      error: "Verification failed. Please try again.",
+      success: null,
+    });
+  }
+});
+
+app.post("/auth/resend-verification", requireAuth, async (req, res) => {
+  try {
+    const user = req.user;
+
+    if (user.emailVerified) {
+      return res.redirect("/profile");
+    }
+
+    const verificationCode = generateVerificationCode();
+    user.verificationCode = verificationCode;
+    user.verificationCodeExpires = new Date(Date.now() + 15 * 60 * 1000);
+    await user.save();
+
+    await sendVerificationEmail(user.email, user.username, verificationCode);
+    log(`Resent verification email to ${chalk.grey.italic(user.email)}`, "info");
+
+    res.render("auth/verify-email", {
+      email: user.email,
+      error: null,
+      success: "A new verification code has been sent to your email.",
+    });
+  } catch (error) {
+    log(`Resend verification error: ${error.message}`, "error");
+    res.render("auth/verify-email", {
+      email: req.user.email,
+      error: "Failed to resend verification code. Please try again.",
+      success: null,
+    });
+  }
 });
 
 // Profile Route

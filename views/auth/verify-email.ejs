@@ -1,0 +1,79 @@
+<% pageTitle = 'Verify Email - Learning Hub' %>
+<%- include('../partials/header') %>
+
+<main class="main-container">
+  <div class="auth-container" style="max-width: 450px; margin: 60px auto;">
+    <div class="auth-card" style="background: var(--bg-primary); border-radius: var(--border-radius-lg); padding: calc(var(--spacing-unit) * 6); box-shadow: var(--shadow-md);">
+      <div style="text-align: center; margin-bottom: calc(var(--spacing-unit) * 3);">
+        <div style="font-size: 4rem; margin-bottom: calc(var(--spacing-unit) * 2);">📧</div>
+        <h1 class="auth-title" style="font-size: 2rem; font-weight: 700; margin-bottom: calc(var(--spacing-unit) * 2); color: var(--text-primary);">
+          Verify Your Email
+        </h1>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">
+          We've sent a 6-digit verification code to <strong style="color: var(--text-primary);"><%= email %></strong>
+        </p>
+      </div>
+
+      <% if (error) { %>
+        <div class="alert alert-error" style="background: rgba(239, 68, 68, 0.1); color: var(--color-danger); padding: calc(var(--spacing-unit) * 2); border-radius: var(--border-radius-sm); margin-bottom: calc(var(--spacing-unit) * 3); border: 2px solid var(--color-danger);">
+          <%= error %>
+        </div>
+      <% } %>
+
+      <% if (success) { %>
+        <div class="alert alert-success" style="background: rgba(16, 185, 129, 0.1); color: var(--color-success); padding: calc(var(--spacing-unit) * 2); border-radius: var(--border-radius-sm); margin-bottom: calc(var(--spacing-unit) * 3); border: 2px solid var(--color-success);">
+          <%= success %>
+        </div>
+      <% } %>
+
+      <form method="POST" action="/auth/verify-email" id="verifyForm">
+        <div class="form-group" style="margin-bottom: calc(var(--spacing-unit) * 4);">
+          <label for="code" style="display: block; font-weight: 600; margin-bottom: calc(var(--spacing-unit) * 1); color: var(--text-primary);">Verification Code</label>
+          <input
+            type="text"
+            id="code"
+            name="code"
+            required
+            maxlength="6"
+            pattern="[0-9]{6}"
+            placeholder="000000"
+            autocomplete="off"
+            style="width: 100%; padding: calc(var(--spacing-unit) * 2.5); font-size: 1.5rem; text-align: center; letter-spacing: 8px; font-family: 'Monaco', 'Courier New', monospace; border: 2px solid var(--color-neutral-200); border-radius: var(--border-radius-sm); background: var(--bg-primary); color: var(--text-primary); font-weight: 700;"
+          >
+          <small style="display: block; margin-top: calc(var(--spacing-unit) * 1); color: var(--text-secondary); font-size: 0.85rem; text-align: center;">Enter the 6-digit code from your email</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; background: var(--color-primary); color: white; border: none; padding: calc(var(--spacing-unit) * 2.5); border-radius: var(--border-radius-sm); font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all var(--transition-fast);">
+          Verify Email
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: calc(var(--spacing-unit) * 4); padding-top: calc(var(--spacing-unit) * 4); border-top: 1px solid var(--color-neutral-200);">
+        <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: calc(var(--spacing-unit) * 2);">
+          Didn't receive the code?
+        </p>
+        <form method="POST" action="/auth/resend-verification" style="display: inline;">
+          <button type="submit" class="btn btn-secondary" style="background: var(--color-neutral-200); color: var(--text-primary); border: none; padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 3); border-radius: var(--border-radius-sm); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all var(--transition-fast);">
+            Resend Code
+          </button>
+        </form>
+      </div>
+
+      <div style="text-align: center; margin-top: calc(var(--spacing-unit) * 3);">
+        <a href="/auth/logout" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Use a different email</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const codeInput = document.getElementById('code');
+
+  codeInput.addEventListener('input', function(e) {
+    this.value = this.value.replace(/[^0-9]/g, '');
+  });
+
+  codeInput.focus();
+</script>
+
+<%- include('../partials/footer') %>
