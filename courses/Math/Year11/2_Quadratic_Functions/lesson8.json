@@ -1,0 +1,63 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Quadratic Functions",
+  "lessonNumber": 8,
+  "title": "Graphing Quadratic Functions",
+  "description": "Learn to graph parabolas and identify key features",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "The graph of a quadratic function is called a parabola. Understanding how to graph parabolas helps us visualize solutions and real-world applications."
+    },
+    {
+      "type": "concept",
+      "heading": "Key Features of a Parabola",
+      "text": "• Vertex: the highest or lowest point\n• Axis of symmetry: vertical line through vertex\n• Y-intercept: where graph crosses y-axis (0, c)\n• X-intercepts (roots): where graph crosses x-axis\n• Direction: opens up (a > 0) or down (a < 0)"
+    },
+    {
+      "type": "concept",
+      "heading": "Axis of Symmetry",
+      "text": "For f(x) = ax² + bx + c, the axis of symmetry is:\n\nx = -b/(2a)\n\nThe x-coordinate of the vertex lies on this line."
+    },
+    {
+      "type": "example",
+      "heading": "Example 1",
+      "problem": "Find the axis of symmetry for f(x) = x² - 6x + 5",
+      "solution": [
+        "Use formula x = -b/(2a)",
+        "a = 1, b = -6",
+        "x = -(-6)/(2·1)",
+        "x = 6/2",
+        "x = 3"
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Example 2",
+      "problem": "Find the vertex of f(x) = x² - 4x + 3",
+      "solution": [
+        "Axis of symmetry: x = -(-4)/(2·1) = 2",
+        "Find y-coordinate: f(2) = 2² - 4(2) + 3",
+        "f(2) = 4 - 8 + 3 = -1",
+        "Vertex: (2, -1)"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Practice Problems",
+      "problems": [
+        ["For f(x) = x² + 8x + 7, what is the axis of symmetry?", "-4"],
+        ["For f(x) = x² - 10x + 16, what is the axis of symmetry?", "5"],
+        ["For f(x) = 2x² + 12x - 5, what is -b/(2a)?", "-3"],
+        ["For f(x) = x² - 6x + 8, what is the y-intercept?", "8"],
+        ["Does f(x) = -3x² + 5x - 1 open up or down?", "down"],
+        ["Does f(x) = 2x² - 7x + 3 open up or down?", "up"],
+        ["For f(x) = x² + 4x, what is the axis of symmetry?", "-2"],
+        ["For f(x) = -x² + 6x - 5, what is -b/(2a)?", "3"],
+        ["For f(x) = 3x² - 18x + 24, what is the axis of symmetry?", "3"],
+        ["For f(x) = x² + 2x - 3, what is the y-intercept?", "-3"]
+      ]
+    }
+  ]
+}

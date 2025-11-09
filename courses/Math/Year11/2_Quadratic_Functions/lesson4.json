@@ -1,0 +1,57 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Quadratic Functions",
+  "lessonNumber": 4,
+  "title": "Factoring Quadratics - Simple Cases",
+  "description": "Learn to factor quadratics where a = 1",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "Factoring is the reverse of expanding. We want to write x² + bx + c as (x + p)(x + q). This is useful for solving quadratic equations!"
+    },
+    {
+      "type": "concept",
+      "heading": "Factoring x² + bx + c",
+      "text": "To factor x² + bx + c:\n1. Find two numbers that multiply to c\n2. Those same numbers must add to b\n3. Write as (x + first number)(x + second number)"
+    },
+    {
+      "type": "example",
+      "heading": "Example 1",
+      "problem": "Factor x² + 7x + 12",
+      "solution": [
+        "Need two numbers that multiply to 12 and add to 7",
+        "Factors of 12: 1×12, 2×6, 3×4",
+        "Which pair adds to 7? 3 + 4 = 7 ✓",
+        "Answer: (x + 3)(x + 4)"
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Example 2",
+      "problem": "Factor x² - 5x + 6",
+      "solution": [
+        "Need two numbers that multiply to 6 and add to -5",
+        "Factors of 6: 1×6, 2×3, (-1)×(-6), (-2)×(-3)",
+        "Which pair adds to -5? (-2) + (-3) = -5 ✓",
+        "Answer: (x - 2)(x - 3)"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Practice Problems",
+      "problems": [
+        ["Factor x² + 5x + 6. What are the two constants? (smaller,larger)", "-2,3"],
+        ["Factor x² + 8x + 15. Sum of the two constants?", "8"],
+        ["Factor x² - 6x + 8. Product of the two constants?", "8"],
+        ["Factor x² + 9x + 20. Smaller constant?", "4"],
+        ["Factor x² - 7x + 12. Larger constant (as negative)?", "-3"],
+        ["Factor x² + 11x + 24. Product of constants?", "24"],
+        ["Factor x² - 9x + 20. Sum of the two constants?", "-9"],
+        ["Factor x² + 6x + 5. Larger constant?", "5"],
+        ["Factor x² - 4x + 3. Smaller constant (as negative)?", "-1"],
+        ["Factor x² + 10x + 21. Larger constant?", "7"]
+      ]
+    }
+  ]
+}

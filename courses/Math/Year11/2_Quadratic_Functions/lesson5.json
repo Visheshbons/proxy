@@ -1,0 +1,64 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Quadratic Functions",
+  "lessonNumber": 5,
+  "title": "Factoring Quadratics - Complex Cases",
+  "description": "Factor quadratics where a ≠ 1 and difference of squares",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "When the coefficient of x² is not 1, factoring becomes more challenging. We'll also learn special patterns like the difference of squares."
+    },
+    {
+      "type": "concept",
+      "heading": "Difference of Squares",
+      "text": "Special pattern: a² - b² = (a + b)(a - b)\nExample: x² - 9 = (x + 3)(x - 3)\nNote: Only works for subtraction, not addition!"
+    },
+    {
+      "type": "concept",
+      "heading": "Factoring ax² + bx + c (a ≠ 1)",
+      "text": "Method: Find two numbers that multiply to a×c and add to b, then split the middle term and factor by grouping."
+    },
+    {
+      "type": "example",
+      "heading": "Example 1",
+      "problem": "Factor x² - 16",
+      "solution": [
+        "Recognize this as a difference of squares",
+        "x² - 16 = x² - 4²",
+        "Apply pattern: a² - b² = (a + b)(a - b)",
+        "Answer: (x + 4)(x - 4)"
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Example 2",
+      "problem": "Factor 2x² + 7x + 3",
+      "solution": [
+        "Find numbers that multiply to 2×3=6 and add to 7",
+        "6 and 1 work: 6×1=6, 6+1=7",
+        "Rewrite: 2x² + 6x + 1x + 3",
+        "Group: (2x² + 6x) + (1x + 3)",
+        "Factor each: 2x(x + 3) + 1(x + 3)",
+        "Answer: (2x + 1)(x + 3)"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Practice Problems",
+      "problems": [
+        ["Factor x² - 25. What is the positive constant?", "5"],
+        ["Factor x² - 49. What is the positive constant?", "7"],
+        ["Factor x² - 64. What is the positive constant?", "8"],
+        ["Factor x² - 1. What is the positive constant?", "1"],
+        ["Factor x² - 100. What is the positive constant?", "10"],
+        ["Factor 2x² + 5x + 2. What is a×c?", "4"],
+        ["Factor 3x² + 10x + 3. Sum b?", "10"],
+        ["Factor x² - 36. Positive constant?", "6"],
+        ["Factor 2x² + 7x + 3. Product a×c?", "6"],
+        ["Factor x² - 81. Positive constant?", "9"]
+      ]
+    }
+  ]
+}

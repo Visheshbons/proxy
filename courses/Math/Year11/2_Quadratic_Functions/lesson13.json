@@ -1,0 +1,61 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Quadratic Functions",
+  "lessonNumber": 13,
+  "title": "Quadratic Inequalities",
+  "description": "Solve and graph quadratic inequalities",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "Quadratic inequalities involve >, <, ≥, or ≤ instead of =. We find where the parabola is above or below the x-axis."
+    },
+    {
+      "type": "concept",
+      "heading": "Solving Quadratic Inequalities",
+      "text": "Steps:\n1. Solve the related equation (replace inequality with =)\n2. Find the zeros (x-intercepts)\n3. Test points in each interval\n4. Determine which intervals satisfy the inequality\n5. Write solution in interval notation"
+    },
+    {
+      "type": "example",
+      "heading": "Example 1",
+      "problem": "Solve x² - 5x + 6 > 0",
+      "solution": [
+        "First solve x² - 5x + 6 = 0",
+        "Factor: (x - 2)(x - 3) = 0",
+        "Zeros: x = 2 and x = 3",
+        "Test x = 0: 0² - 0 + 6 = 6 > 0 ✓",
+        "Test x = 2.5: 6.25 - 12.5 + 6 = -0.25 < 0 ✗",
+        "Test x = 4: 16 - 20 + 6 = 2 > 0 ✓",
+        "Solution: x < 2 or x > 3"
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Example 2",
+      "problem": "Solve x² - 4 ≤ 0",
+      "solution": [
+        "Solve x² - 4 = 0",
+        "x² = 4, so x = ±2",
+        "Test x = 0: 0 - 4 = -4 ≤ 0 ✓",
+        "Test x = 3: 9 - 4 = 5 > 0 ✗",
+        "Solution: -2 ≤ x ≤ 2"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Practice Problems",
+      "problems": [
+        ["For (x-3)(x-5) > 0, is x=4 a solution? (yes/no)", "no"],
+        ["For (x-3)(x-5) > 0, is x=6 a solution? (yes/no)", "yes"],
+        ["For (x-3)(x-5) > 0, is x=2 a solution? (yes/no)", "yes"],
+        ["For x² - 9 < 0, what are the boundary points? (lower)", "-3"],
+        ["For x² - 9 < 0, what are the boundary points? (upper)", "3"],
+        ["For x² - 16 ≥ 0, is x=0 a solution? (yes/no)", "no"],
+        ["For x² - 16 ≥ 0, is x=5 a solution? (yes/no)", "yes"],
+        ["For (x+2)(x-4) < 0, smaller boundary?", "-2"],
+        ["For (x+2)(x-4) < 0, larger boundary?", "4"],
+        ["For x² < 25, is x=6 a solution? (yes/no)", "no"]
+      ]
+    }
+  ]
+}

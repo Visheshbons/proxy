@@ -1,0 +1,65 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Quadratic Functions",
+  "lessonNumber": 6,
+  "title": "Completing the Square",
+  "description": "Transform quadratics into vertex form by completing the square",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "Completing the square is a method to rewrite a quadratic in vertex form. This reveals the vertex of the parabola and is essential for solving quadratic equations."
+    },
+    {
+      "type": "concept",
+      "heading": "Perfect Square Trinomials",
+      "text": "A perfect square trinomial has the form: x² + 2ax + a² = (x + a)²\nExample: x² + 6x + 9 = (x + 3)²\nThe constant term is always (half the coefficient of x)²"
+    },
+    {
+      "type": "concept",
+      "heading": "Steps to Complete the Square",
+      "text": "For x² + bx:\n1. Take half of b: b/2\n2. Square it: (b/2)²\n3. Add and subtract this value\n4. Factor the perfect square trinomial"
+    },
+    {
+      "type": "example",
+      "heading": "Example 1",
+      "problem": "Complete the square for x² + 8x",
+      "solution": [
+        "Half of 8 is 4",
+        "Square it: 4² = 16",
+        "x² + 8x = x² + 8x + 16 - 16",
+        "Factor: (x + 4)² - 16",
+        "Answer: (x + 4)² - 16"
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Example 2",
+      "problem": "Complete the square for x² - 10x + 7",
+      "solution": [
+        "Focus on x² - 10x first",
+        "Half of -10 is -5",
+        "Square it: (-5)² = 25",
+        "x² - 10x = (x - 5)² - 25",
+        "Add back the +7: (x - 5)² - 25 + 7",
+        "Answer: (x - 5)² - 18"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Practice Problems",
+      "problems": [
+        ["Complete square for x² + 6x. What do you add and subtract?", "9"],
+        ["Complete square for x² - 4x. What do you add and subtract?", "4"],
+        ["Complete square for x² + 12x. What do you add and subtract?", "36"],
+        ["Complete square for x² - 8x. What do you add and subtract?", "16"],
+        ["In (x + ?)² for x² + 10x, what goes in ??", "5"],
+        ["In (x - ?)² for x² - 14x, what goes in ??", "7"],
+        ["Complete square for x² + 2x. What do you add?", "1"],
+        ["Complete square for x² - 6x. What do you add?", "9"],
+        ["For x² + 16x, what is (b/2)²?", "64"],
+        ["For x² - 20x, what is (b/2)²?", "100"]
+      ]
+    }
+  ]
+}

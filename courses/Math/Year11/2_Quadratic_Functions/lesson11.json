@@ -1,0 +1,57 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Quadratic Functions",
+  "lessonNumber": 11,
+  "title": "Solving Quadratic Equations Graphically",
+  "description": "Use graphs to find solutions to quadratic equations",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "We can solve quadratic equations by finding where the parabola crosses the x-axis. These points are called x-intercepts, roots, or zeros."
+    },
+    {
+      "type": "concept",
+      "heading": "X-Intercepts and Solutions",
+      "text": "The solutions to ax² + bx + c = 0 are the x-values where the graph crosses the x-axis (where y = 0).\n\n• Two x-intercepts → two solutions\n• One x-intercept → one solution (vertex on x-axis)\n• No x-intercepts → no real solutions"
+    },
+    {
+      "type": "example",
+      "heading": "Example 1",
+      "problem": "If f(x) = x² - 5x + 6 crosses the x-axis at x = 2 and x = 3, what are the solutions to x² - 5x + 6 = 0?",
+      "solution": [
+        "X-intercepts are where f(x) = 0",
+        "The graph crosses at x = 2 and x = 3",
+        "Solutions: x = 2 and x = 3",
+        "Check: 2² - 5(2) + 6 = 4 - 10 + 6 = 0 ✓"
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Example 2",
+      "problem": "How many solutions does x² + 4x + 5 = 0 have if its vertex is at (-2, 1) and opens upward?",
+      "solution": [
+        "Opens upward and vertex y-coordinate is 1",
+        "Since vertex is above x-axis and opens up...",
+        "The graph never crosses the x-axis",
+        "Answer: No real solutions"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Practice Problems",
+      "problems": [
+        ["If a parabola crosses x-axis at 1 and 5, sum of solutions?", "6"],
+        ["If a parabola crosses x-axis at -2 and 4, product of solutions?", "-8"],
+        ["If vertex is (3,0) and opens up, how many x-intercepts?", "1"],
+        ["If vertex is (2,-4) and opens up, how many x-intercepts?", "2"],
+        ["If vertex is (1,5) and opens down, how many x-intercepts?", "2"],
+        ["If vertex is (-1,3) and opens up, how many x-intercepts?", "0"],
+        ["If roots are x=2 and x=6, what is axis of symmetry?", "4"],
+        ["If roots are x=-3 and x=1, what is axis of symmetry?", "-1"],
+        ["If x-intercepts are at 0 and 8, midpoint?", "4"],
+        ["If parabola touches x-axis at x=5 only, how many solutions?", "1"]
+      ]
+    }
+  ]
+}

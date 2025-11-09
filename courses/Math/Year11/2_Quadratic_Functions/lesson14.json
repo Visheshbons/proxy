@@ -1,0 +1,61 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Quadratic Functions",
+  "lessonNumber": 14,
+  "title": "Systems with Quadratic Equations",
+  "description": "Solve systems involving linear and quadratic equations",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "A system with one linear and one quadratic equation can have 0, 1, or 2 solutions. These represent points where a line intersects a parabola."
+    },
+    {
+      "type": "concept",
+      "heading": "Solving by Substitution",
+      "text": "Steps:\n1. Solve the linear equation for one variable\n2. Substitute into the quadratic equation\n3. Solve the resulting quadratic\n4. Find corresponding y-values\n5. Write solutions as ordered pairs"
+    },
+    {
+      "type": "example",
+      "heading": "Example 1",
+      "problem": "Solve: y = x² - 4 and y = 2x - 1",
+      "solution": [
+        "Set equations equal: x² - 4 = 2x - 1",
+        "Rearrange: x² - 2x - 3 = 0",
+        "Factor: (x - 3)(x + 1) = 0",
+        "x = 3 or x = -1",
+        "When x = 3: y = 2(3) - 1 = 5",
+        "When x = -1: y = 2(-1) - 1 = -3",
+        "Solutions: (3, 5) and (-1, -3)"
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Example 2",
+      "problem": "How many solutions: y = x² + 2x + 5 and y = x + 1?",
+      "solution": [
+        "Set equal: x² + 2x + 5 = x + 1",
+        "Simplify: x² + x + 4 = 0",
+        "Find discriminant: b² - 4ac = 1 - 16 = -15",
+        "Discriminant < 0",
+        "Answer: No real solutions (line doesn't intersect parabola)"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Practice Problems",
+      "problems": [
+        ["For y=x² and y=x, how many intersection points?", "2"],
+        ["For y=x²-4 and y=0, x-intercepts sum?", "0"],
+        ["For y=x²-4 and y=0, x-intercepts product?", "-4"],
+        ["If y=x² and y=4, what is positive x solution?", "2"],
+        ["If y=x² and y=9, what is positive x solution?", "3"],
+        ["For y=x²-1 and y=3, how many solutions?", "2"],
+        ["If y=x²+1 and y=0, how many real solutions?", "0"],
+        ["For y=x² and y=x+2, rearranged: x²-x-? = 0", "2"],
+        ["If y=(x-2)² and y=0, what is x?", "2"],
+        ["For y=x²-5 and y=4, positive solution x = ?", "3"]
+      ]
+    }
+  ]
+}

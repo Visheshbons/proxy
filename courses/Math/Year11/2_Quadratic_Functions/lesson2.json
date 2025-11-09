@@ -1,0 +1,57 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Quadratic Functions",
+  "lessonNumber": 2,
+  "title": "Standard Form of Quadratics",
+  "description": "Understanding and working with the standard form ax² + bx + c",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "The standard form of a quadratic function is f(x) = ax² + bx + c. This form makes it easy to identify the y-intercept and determine the direction the parabola opens."
+    },
+    {
+      "type": "concept",
+      "heading": "Standard Form: f(x) = ax² + bx + c",
+      "text": "• a is the leading coefficient (must not be zero)\n• b is the linear coefficient\n• c is the constant term (y-intercept)\n• The graph is a parabola"
+    },
+    {
+      "type": "example",
+      "heading": "Example 1",
+      "problem": "Identify the values in f(x) = 2x² - 6x + 4",
+      "solution": [
+        "a = 2",
+        "b = -6",
+        "c = 4",
+        "Y-intercept is at (0, 4)",
+        "Parabola opens upward"
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Example 2",
+      "problem": "Write a quadratic with a = 3, b = -2, c = 5",
+      "solution": [
+        "Substitute into standard form: f(x) = ax² + bx + c",
+        "f(x) = 3x² + (-2)x + 5",
+        "f(x) = 3x² - 2x + 5"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Practice Problems",
+      "problems": [
+        ["In f(x) = 7x² - 3x + 2, what is a?", "7"],
+        ["In f(x) = -4x² + 5x - 1, what is b?", "5"],
+        ["In f(x) = x² - 8x + 6, what is c?", "6"],
+        ["What is the y-intercept of f(x) = 3x² + 2x - 7?", "-7"],
+        ["If a = 5, b = -10, c = 3, write the function", "5x²-10x+3"],
+        ["In f(x) = -x² + 4x, what is c?", "0"],
+        ["In f(x) = 6x² - 9, what is b?", "0"],
+        ["Does f(x) = -2x² + 7x - 3 open up or down?", "down"],
+        ["What is the y-intercept of f(x) = 4x² - 5x?", "0"],
+        ["If f(x) = mx² + 3x - 2 and m = -1, what is a?", "-1"]
+      ]
+    }
+  ]
+}

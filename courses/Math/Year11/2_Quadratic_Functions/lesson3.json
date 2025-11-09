@@ -1,0 +1,61 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Quadratic Functions",
+  "lessonNumber": 3,
+  "title": "Expanding Quadratic Expressions",
+  "description": "Learn to expand factored forms into standard form",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "Sometimes quadratics are given in factored form like (x + 2)(x - 3). We need to expand them to get standard form using the distributive property (FOIL)."
+    },
+    {
+      "type": "concept",
+      "heading": "FOIL Method",
+      "text": "When multiplying (a + b)(c + d):\n• First: multiply first terms (ac)\n• Outer: multiply outer terms (ad)\n• Inner: multiply inner terms (bc)\n• Last: multiply last terms (bd)\nResult: ac + ad + bc + bd"
+    },
+    {
+      "type": "example",
+      "heading": "Example 1",
+      "problem": "Expand (x + 3)(x + 5)",
+      "solution": [
+        "First: x · x = x²",
+        "Outer: x · 5 = 5x",
+        "Inner: 3 · x = 3x",
+        "Last: 3 · 5 = 15",
+        "Combine: x² + 5x + 3x + 15",
+        "Answer: x² + 8x + 15"
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Example 2",
+      "problem": "Expand (x - 4)(x + 2)",
+      "solution": [
+        "First: x · x = x²",
+        "Outer: x · 2 = 2x",
+        "Inner: -4 · x = -4x",
+        "Last: -4 · 2 = -8",
+        "Combine: x² + 2x - 4x - 8",
+        "Answer: x² - 2x - 8"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Practice Problems",
+      "problems": [
+        ["Expand (x + 2)(x + 3). What is the constant term?", "6"],
+        ["Expand (x - 1)(x + 4). What is the coefficient of x?", "3"],
+        ["Expand (x + 5)(x + 1). What is the constant term?", "5"],
+        ["Expand (x - 3)(x - 2). What is the constant term?", "6"],
+        ["Expand (x + 4)(x - 4). What is the x² coefficient?", "1"],
+        ["Expand (x - 5)(x + 5). What is the constant term?", "-25"],
+        ["Expand (x + 6)(x + 2). What is the coefficient of x?", "8"],
+        ["Expand (x - 7)(x + 3). What is the coefficient of x?", "-4"],
+        ["Expand (x + 1)(x + 1). What is the constant term?", "1"],
+        ["Expand (x - 2)(x + 8). What is the constant term?", "-16"]
+      ]
+    }
+  ]
+}

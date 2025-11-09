@@ -1,0 +1,59 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Quadratic Functions",
+  "lessonNumber": 9,
+  "title": "Vertex Form of Quadratics",
+  "description": "Understand and use vertex form f(x) = a(x - h)² + k",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "Vertex form makes it easy to identify the vertex and graph a parabola. It's especially useful for transformations and word problems."
+    },
+    {
+      "type": "concept",
+      "heading": "Vertex Form",
+      "text": "f(x) = a(x - h)² + k\n\n• (h, k) is the vertex\n• a determines width and direction\n• If a > 0, opens upward\n• If a < 0, opens downward\n• |a| > 1: narrower, |a| < 1: wider"
+    },
+    {
+      "type": "example",
+      "heading": "Example 1",
+      "problem": "Find the vertex of f(x) = 2(x - 3)² + 5",
+      "solution": [
+        "Compare to f(x) = a(x - h)² + k",
+        "h = 3 (note: x - 3, so h is positive 3)",
+        "k = 5",
+        "Vertex: (3, 5)",
+        "Opens upward since a = 2 > 0"
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Example 2",
+      "problem": "Find the vertex of f(x) = -(x + 4)² - 7",
+      "solution": [
+        "Rewrite: f(x) = -1(x - (-4))² + (-7)",
+        "h = -4",
+        "k = -7",
+        "Vertex: (-4, -7)",
+        "Opens downward since a = -1 < 0"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Practice Problems",
+      "problems": [
+        ["For f(x) = (x - 5)² + 3, what is h?", "5"],
+        ["For f(x) = (x - 5)² + 3, what is k?", "3"],
+        ["For f(x) = (x + 2)² - 7, what is h?", "-2"],
+        ["For f(x) = (x + 2)² - 7, what is k?", "-7"],
+        ["For f(x) = 3(x - 1)² + 4, what is the vertex x-coordinate?", "1"],
+        ["For f(x) = 3(x - 1)² + 4, what is the vertex y-coordinate?", "4"],
+        ["Does f(x) = -2(x - 3)² + 1 open up or down?", "down"],
+        ["Does f(x) = 4(x + 1)² - 5 open up or down?", "up"],
+        ["For f(x) = (x - 6)² + 8, what is h?", "6"],
+        ["For f(x) = -(x + 3)² + 2, what is k?", "2"]
+      ]
+    }
+  ]
+}

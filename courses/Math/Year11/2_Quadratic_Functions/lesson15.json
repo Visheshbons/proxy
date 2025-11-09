@@ -1,0 +1,58 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Quadratic Functions",
+  "lessonNumber": 15,
+  "title": "Applications of Quadratic Functions",
+  "description": "Comprehensive review and advanced applications",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "Let's put everything together! This lesson reviews all quadratic concepts and explores advanced applications in physics, economics, and engineering."
+    },
+    {
+      "type": "concept",
+      "heading": "Forms of Quadratics Summary",
+      "text": "• Standard form: f(x) = ax² + bx + c\n• Factored form: f(x) = a(x - r₁)(x - r₂)\n• Vertex form: f(x) = a(x - h)² + k\n\nEach form reveals different information about the parabola!"
+    },
+    {
+      "type": "example",
+      "heading": "Projectile Motion",
+      "problem": "A rocket's height is h(t) = -5t² + 30t + 10 meters. When does it reach 35m?",
+      "solution": [
+        "Set h(t) = 35: -5t² + 30t + 10 = 35",
+        "Simplify: -5t² + 30t - 25 = 0",
+        "Divide by -5: t² - 6t + 5 = 0",
+        "Factor: (t - 5)(t - 1) = 0",
+        "t = 1 second (going up) and t = 5 seconds (coming down)"
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Business Application",
+      "problem": "Profit is P(x) = -2x² + 40x - 50 dollars, where x is hundreds of items. Find maximum profit.",
+      "solution": [
+        "Maximum at x = -40/(2·-2) = 10",
+        "P(10) = -2(100) + 40(10) - 50",
+        "P(10) = -200 + 400 - 50 = $150",
+        "Maximum profit: $150 at 1000 items"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Comprehensive Practice",
+      "problems": [
+        ["For h(t) = -16t² + 48t, maximum height?", "36"],
+        ["For P(x) = -x² + 50x, at what x is profit maximized?", "25"],
+        ["If projectile lands at t=4, initial velocity with h=-16t²+vt?", "64"],
+        ["For area A=x(100-2x), maximum area?", "1250"],
+        ["For revenue R=-5x²+200x, maximum R?", "2000"],
+        ["If parabola passes through (0,5) and (1,8) with a=3, find b", "0"],
+        ["For f(x)=2x²-12x+k with vertex y=1, find k", "19"],
+        ["If zeros are 3 and 7, what is b in x²+bx+21=0?", "-10"],
+        ["For h(t)=-4.9t²+20t+2, time to hit ground (approximately)?", "4"],
+        ["If max revenue R=-2x²+100x occurs at x=25, what is max R?", "1250"]
+      ]
+    }
+  ]
+}

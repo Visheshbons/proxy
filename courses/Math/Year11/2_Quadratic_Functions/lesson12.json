@@ -1,0 +1,58 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Quadratic Functions",
+  "lessonNumber": 12,
+  "title": "Word Problems with Quadratics",
+  "description": "Apply quadratic functions to real-world scenarios",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "Quadratic functions model many real-world situations: projectile motion, area problems, revenue and profit maximization, and more!"
+    },
+    {
+      "type": "concept",
+      "heading": "Common Quadratic Applications",
+      "text": "• Projectile motion: h(t) = -16t² + v₀t + h₀\n• Area problems: A = length × width\n• Revenue: R = (price)(quantity sold)\n• Optimization: find maximum or minimum values"
+    },
+    {
+      "type": "example",
+      "heading": "Example 1",
+      "problem": "A ball is thrown upward with velocity 32 ft/s from height 6 ft. Its height is h(t) = -16t² + 32t + 6. What is the maximum height?",
+      "solution": [
+        "Find vertex since a = -16 < 0 (maximum)",
+        "t = -32/(2·-16) = -32/(-32) = 1 second",
+        "h(1) = -16(1)² + 32(1) + 6",
+        "h(1) = -16 + 32 + 6 = 22 feet",
+        "Maximum height: 22 feet at t = 1 second"
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Example 2",
+      "problem": "A rectangular garden has perimeter 40m. If width is x, area is A = x(20-x). Find maximum area.",
+      "solution": [
+        "A = x(20-x) = 20x - x² = -x² + 20x",
+        "Maximum at x = -20/(2·-1) = 10",
+        "Maximum area: A = 10(20-10) = 100 m²",
+        "Garden should be 10m × 10m (a square)"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Practice Problems",
+      "problems": [
+        ["For h(t) = -16t² + 48t, at what t is maximum height?", "1.5"],
+        ["For h(t) = -16t² + 64t + 4, what is initial height?", "4"],
+        ["If area A = x(30-x), at what x is A maximum?", "15"],
+        ["If A = x(40-x), what is maximum area?", "400"],
+        ["For R = -2x² + 80x, at what x is revenue maximum?", "20"],
+        ["For P = -x² + 100x - 500, is there a max or min?", "max"],
+        ["If h(t) = -16t² + 32t, when does object hit ground (h=0)?", "2"],
+        ["For A = 2x(50-x) = -2x² + 100x, max at x = ?", "25"],
+        ["If revenue R = -3x² + 60x, what is maximum R?", "300"],
+        ["For h(t) = -16t² + 80t + 5, what is coefficient of t²?", "-16"]
+      ]
+    }
+  ]
+}

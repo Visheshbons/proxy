@@ -1,0 +1,65 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Quadratic Functions",
+  "lessonNumber": 7,
+  "title": "The Quadratic Formula",
+  "description": "Use the quadratic formula to solve any quadratic equation",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "The quadratic formula can solve ANY quadratic equation, even when factoring is difficult or impossible. It's one of the most important formulas in mathematics!"
+    },
+    {
+      "type": "concept",
+      "heading": "The Quadratic Formula",
+      "text": "For ax² + bx + c = 0:\n\nx = (-b ± √(b² - 4ac)) / (2a)\n\nThe expression b² - 4ac is called the discriminant."
+    },
+    {
+      "type": "concept",
+      "heading": "The Discriminant",
+      "text": "b² - 4ac tells us about the solutions:\n• If > 0: two real solutions\n• If = 0: one real solution\n• If < 0: no real solutions (two complex)"
+    },
+    {
+      "type": "example",
+      "heading": "Example 1",
+      "problem": "Solve x² - 5x + 6 = 0 using the quadratic formula",
+      "solution": [
+        "Identify: a = 1, b = -5, c = 6",
+        "Substitute into formula:",
+        "x = (5 ± √(25 - 24)) / 2",
+        "x = (5 ± √1) / 2",
+        "x = (5 ± 1) / 2",
+        "x = 3 or x = 2"
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Example 2",
+      "problem": "Find the discriminant of 2x² + 3x - 1 = 0",
+      "solution": [
+        "a = 2, b = 3, c = -1",
+        "Discriminant = b² - 4ac",
+        "= 3² - 4(2)(-1)",
+        "= 9 + 8",
+        "= 17 > 0, so two real solutions"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Practice Problems",
+      "problems": [
+        ["For x² - 6x + 5 = 0, what is the discriminant?", "16"],
+        ["For x² + 4x + 4 = 0, what is the discriminant?", "0"],
+        ["For x² + 2x + 5 = 0, what is the discriminant?", "-16"],
+        ["For 2x² - 8x + 6 = 0, what is b² - 4ac?", "16"],
+        ["For x² - 7x + 12 = 0, what is -b in the formula?", "7"],
+        ["For 3x² + 6x - 9 = 0, what is 2a in the formula?", "6"],
+        ["Does x² + 4x + 5 = 0 have real solutions? (yes/no)", "no"],
+        ["Does x² - 4x + 3 = 0 have real solutions? (yes/no)", "yes"],
+        ["For x² - 10x + 25 = 0, how many solutions?", "1"],
+        ["For x² - 3x - 10 = 0, what is b² - 4ac?", "49"]
+      ]
+    }
+  ]
+}

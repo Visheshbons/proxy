@@ -1,0 +1,61 @@
+{
+  "subject": "Math",
+  "year": 11,
+  "topic": "Quadratic Functions",
+  "lessonNumber": 1,
+  "title": "Introduction to Quadratic Functions",
+  "description": "Learn what makes a function quadratic and identify quadratic functions",
+  "content": [
+    {
+      "type": "introduction",
+      "text": "A quadratic function is a polynomial function with a degree of 2. They create U-shaped curves called parabolas and appear everywhere in physics, engineering, and real life!"
+    },
+    {
+      "type": "concept",
+      "heading": "General Form of a Quadratic",
+      "text": "A quadratic function has the form: f(x) = ax² + bx + c, where a ≠ 0. The highest power of x is 2, and 'a', 'b', and 'c' are constants."
+    },
+    {
+      "type": "concept",
+      "heading": "Key Features",
+      "text": "• If a > 0, the parabola opens upward (U-shape)\n• If a < 0, the parabola opens downward (∩-shape)\n• The coefficient 'a' affects how wide or narrow the parabola is\n• 'c' is the y-intercept"
+    },
+    {
+      "type": "example",
+      "heading": "Example 1",
+      "problem": "Is f(x) = 3x² - 5x + 2 a quadratic function?",
+      "solution": [
+        "Check the highest power of x: it's 2",
+        "Check that the coefficient of x² is not zero: a = 3 ≠ 0",
+        "Yes, this is a quadratic function!"
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Example 2",
+      "problem": "Identify a, b, and c in f(x) = -2x² + 7x - 1",
+      "solution": [
+        "a = -2 (coefficient of x²)",
+        "b = 7 (coefficient of x)",
+        "c = -1 (constant term)",
+        "Since a < 0, this parabola opens downward"
+      ]
+    },
+    {
+      "type": "practice",
+      "heading": "Practice Problems",
+      "problems": [
+        ["Is f(x) = 5x² + 3x - 1 a quadratic function? (yes/no)", "yes"],
+        ["Is g(x) = 2x³ + x² - 4 a quadratic function? (yes/no)", "no"],
+        ["In f(x) = 4x² - 8x + 3, what is the value of a?", "4"],
+        ["In f(x) = -x² + 5x - 2, what is the value of b?", "5"],
+        ["In f(x) = 3x² - 7, what is the value of c?", "-7"],
+        ["Does f(x) = 6x² - 4x + 1 open upward or downward?", "upward"],
+        ["Does f(x) = -5x² + 2x - 3 open upward or downward?", "downward"],
+        ["What is the y-intercept of f(x) = 2x² + 3x - 5?", "-5"],
+        ["In f(x) = -3x² + x, what is c?", "0"],
+        ["Is f(x) = 7 a quadratic function? (yes/no)", "no"]
+      ]
+    }
+  ]
+}
