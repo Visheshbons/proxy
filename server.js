@@ -233,16 +233,6 @@ app.post("/auth/login", async (req, res) => {
       });
     }
 
-    // Check if email is verified
-    if (!user.emailVerified) {
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "7d",
-      });
-      req.session.token = token;
-      req.session.pendingVerification = true;
-      return res.redirect("/auth/verify-email");
-    }
-
     // Check and award daily login credits
     user.checkDailyLogin(DAILY_LOGIN_REWARD); // <-- UPDATED
     user.lastLogin = new Date();
