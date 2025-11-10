@@ -2,6 +2,8 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+const ENABLE_EMAIL_VERIFICATION = process.env.VerifyEmail === "verify";
+
 // Quick runtime checks
 if (!process.env.MONGODB_URI) {
   console.warn("⚠️ MONGODB_URI is not set. The app may fail to connect to the database.");
@@ -181,9 +183,12 @@ app.post("/auth/register", async (req, res) => {
       username,
       email,
       password,
-      verificationCode,
-      verificationCodeExpires: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
-      emailVerified: false,
+      // Toggle email verification fields based on ENABLE_EMAIL_VERIFICATION
+      verificationCode: ENABLE_EMAIL_VERIFICATION ? verificationCode : null,
+      verificationCodeExpires: ENABLE_EMAIL_VERIFICATION
+        ? new Date(Date.now() + 15 * 60 * 1000)
+        : null, // 15 minutes or null
+      emailVerified: !ENABLE_EMAIL_VERIFICATION, // True if disabled, false if enabled
     });
 
     // Migrate localStorage data if provided
@@ -200,27 +205,32 @@ app.post("/auth/register", async (req, res) => {
 
     log(`New user registered: ${chalk.grey.italic(user.username)}`, "info");
 
-    // Send verification email
-    try {
-      await sendVerificationEmail(email, username, verificationCode);
-      log(`Verification email sent to ${chalk.grey.italic(email)}`, "success");
-    } catch (emailError) {
-      log(`Failed to send verification email: ${emailError.message}`, "error");
-      await User.findByIdAndDelete(user._id);
-      return res.render("auth/register", {
-        error:
-          "Failed to send verification email. Please check your email address and try again.",
-      });
-    }
-
-    // Create session with unverified user
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
-
     req.session.token = token;
-    req.session.pendingVerification = true;
-    res.redirect("/auth/verify-email");
+
+    if (ENABLE_EMAIL_VERIFICATION) {
+      // Send verification email
+      try {
+        await sendVerificationEmail(email, username, verificationCode);
+        log(`Verification email sent to ${chalk.grey.italic(email)}`, "success");
+      } catch (emailError) {
+        log(`Failed to send verification email: ${emailError.message}`, "error");
+        // Delete user if email sending fails, preventing a stuck unverified account
+        await User.findByIdAndDelete(user._id);
+        return res.render("auth/register", {
+          error:
+            "Failed to send verification email. Please check your email address and try again.",
+        });
+      }
+
+      req.session.pendingVerification = true;
+      res.redirect("/auth/verify-email");
+    } else {
+      // If verification is disabled, log the user in and redirect to profile immediately
+      res.redirect("/profile");
+    }
   } catch (error) {
     log(`Registration error: ${error.message}`, "error");
     res.render("auth/register", {
@@ -301,6 +311,11 @@ app.get("/auth/logout", (req, res) => {
 
 // Email Verification Routes
 app.get("/auth/verify-email", requireAuth, async (req, res) => {
+  // If verification is disabled, skip this page
+  if (!ENABLE_EMAIL_VERIFICATION) {
+    return res.redirect("/profile");
+  }
+
   if (req.user.emailVerified) {
     return res.redirect("/profile");
   }
@@ -313,6 +328,11 @@ app.get("/auth/verify-email", requireAuth, async (req, res) => {
 });
 
 app.post("/auth/verify-email", requireAuth, async (req, res) => {
+  // If verification is disabled, skip this logic
+  if (!ENABLE_EMAIL_VERIFICATION) {
+    return res.redirect("/profile");
+  }
+
   try {
     const { code } = req.body;
     const user = req.user;
@@ -368,6 +388,11 @@ app.post("/auth/verify-email", requireAuth, async (req, res) => {
 });
 
 app.post("/auth/resend-verification", requireAuth, async (req, res) => {
+  // If verification is disabled, skip this logic
+  if (!ENABLE_EMAIL_VERIFICATION) {
+    return res.redirect("/profile");
+  }
+
   try {
     const user = req.user;
 

@@ -16,8 +16,15 @@ export function generateVerificationCode() {
 
 /**
  * Send a verification email using the Resend API
+ * Only works if VerifyEmail=verify in environment variables
  */
 export async function sendVerificationEmail(email, username, code) {
+  // Check environment variable gate
+  if (process.env.VerifyEmail !== "verify") {
+    console.warn("⚠️ Email verification is disabled (VerifyEmail env not set to 'verify').");
+    return false; // Skip sending
+  }
+
   const html = `
   <!DOCTYPE html>
   <html lang="en">
