@@ -2,6 +2,17 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+// Quick runtime checks
+if (!process.env.MONGODB_URI) {
+  console.warn("⚠️ MONGODB_URI is not set. The app may fail to connect to the database.");
+}
+if (!process.env.SESSION_SECRET) {
+  console.warn("⚠️ SESSION_SECRET is not set. Sessions may be insecure or fail.");
+}
+if (!process.env.RESEND_API_KEY) {
+  console.warn("⚠️ RESEND_API_KEY is not set. Email sending will fail. For Render testing you can use onboarding@resend.dev after verifying your recipient email in Resend.");
+}
+
 // Now import everything else
 import express from "express";
 import path from "path";
@@ -94,6 +105,8 @@ function log(msg, type = "info") {
       prefix = `[${chalk.gray("DEBUG")}]`;
       console.debug(prefix, msg);
       break;
+    default:
+      console.log(msg);
   }
 }
 
@@ -234,7 +247,7 @@ app.post("/auth/login", async (req, res) => {
     }
 
     // Check and award daily login credits
-    user.checkDailyLogin(DAILY_LOGIN_REWARD); // <-- UPDATED
+    user.checkDailyLogin(DAILY_LOGIN_REWARD);
     user.lastLogin = new Date();
 
     // Migrate localStorage data if provided
