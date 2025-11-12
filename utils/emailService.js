@@ -1,11 +1,49 @@
-import { Resend } from "resend";
-import crypto from "crypto";
 import dotenv from "dotenv";
-
 dotenv.config();
 
-// Initialize Resend with API key
-const resend = new Resend(process.env.RESEND_API_KEY);
+import crypto from "crypto";
+import { Resend } from "resend";
+import nodemailer from "nodemailer";
+
+// Load environment variables
+const {
+  EMAIL_AUTH_TYPE, // "resend" or "smtp"
+  RESEND_API_KEY,
+  EMAIL_FROM,
+  SMTP_HOST,
+  SMTP_PORT,
+  SMTP_USER,
+  SMTP_PASS,
+  SMTP_SECURE,
+  SMTP_FROM,
+  VerifyEmail,
+} = process.env;
+
+// Initialize backend
+let resendClient = null;
+let smtpTransporter = null;
+
+if (EMAIL_AUTH_TYPE === "resend") {
+  try {
+    resendClient = new Resend(RESEND_API_KEY);
+    console.log("📧 Email backend: Resend");
+  } catch (err) {
+    console.error("❌ Failed to initialize Resend:", err.message);
+  }
+} else if (EMAIL_AUTH_TYPE === "smtp") {
+  smtpTransporter = nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: parseInt(SMTP_PORT, 10) || 465,
+    secure: SMTP_SECURE === "true",
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASS,
+    },
+  });
+  console.log(`📧 Email backend: SMTP (${SMTP_HOST})`);
+} else {
+  console.warn("⚠️ Invalid or missing EMAIL_AUTH_TYPE. Set it to 'resend' or 'smtp' in .env.");
+}
 
 /**
  * Generate a 6-digit verification code
@@ -15,14 +53,13 @@ export function generateVerificationCode() {
 }
 
 /**
- * Send a verification email using the Resend API
- * Only works if VerifyEmail=verify in environment variables
+ * Send a verification email
+ * Only works if VerifyEmail=verify in .env
  */
 export async function sendVerificationEmail(email, username, code) {
-  // Check environment variable gate
-  if (process.env.VerifyEmail !== "verify") {
-    console.warn("⚠️ Email verification is disabled (VerifyEmail env not set to 'verify').");
-    return false; // Skip sending
+  if (VerifyEmail !== "verify") {
+    console.warn("⚠️ Email verification disabled (VerifyEmail env not set to 'verify').");
+    return false;
   }
 
   const html = `
@@ -151,22 +188,32 @@ export async function sendVerificationEmail(email, username, code) {
   `;
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || "Learning Hub <onboarding@resend.dev>",
-      to: email,
-      subject: "Verify Your Email - Learning Hub",
-      html,
-    });
-
-    if (error) {
-      console.error("❌ Email sending failed:", error);
-      throw error;
+    if (EMAIL_AUTH_TYPE === "resend" && resendClient) {
+      // --- Resend backend ---
+      const { data, error } = await resendClient.emails.send({
+        from: EMAIL_FROM || "Learning Hub <onboarding@resend.dev>",
+        to: email,
+        subject: "Verify Your Email - Learning Hub",
+        html,
+      });
+      if (error) throw error;
+      console.log("✅ Verification email sent via Resend:", data?.id || "Success");
+      return true;
+    } else if (EMAIL_AUTH_TYPE === "smtp" && smtpTransporter) {
+      // --- SMTP backend ---
+      await smtpTransporter.sendMail({
+        from: SMTP_FROM || SMTP_USER,
+        to: email,
+        subject: "Verify Your Email - Learning Hub",
+        html,
+      });
+      console.log("✅ Verification email sent via SMTP");
+      return true;
+    } else {
+      throw new Error("Invalid EMAIL_AUTH_TYPE or backend not initialized.");
     }
-
-    console.log("✅ Verification email sent:", data?.id || "Success");
-    return true;
   } catch (err) {
-    console.error("❌ Unexpected error while sending email:", err.message);
+    console.error("❌ Email sending failed:", err.message);
     throw err;
   }
 }
